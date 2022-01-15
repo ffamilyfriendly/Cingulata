@@ -1,0 +1,70 @@
+:root {
+  --bg-colour: #191919;
+  --on-bg: white;
+
+  --primary: #d84727;
+  /* D84727 */
+}
+
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: var(--bg-colour);
+  color: var(--on-bg);
+}
+
+.center {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+  position: absolute;
+  justify-content: center;
+  align-items: center;
+}
+
+.ltr-center-children {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.title-gigantic {
+  font-size: 10rem;
+}
+
+.margin-medium {
+  margin: 1rem;
+}
+
+.btn {
+  text-align: center;
+  text-decoration: none;
+  color: inherit;
+  display: inline-block;
+  padding: 0.5rem;
+  border-radius: 0.7rem;
+  transition: 0.2s;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+}
+
+.btn-large {
+  font-size: large;
+  padding: 1rem;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+}
