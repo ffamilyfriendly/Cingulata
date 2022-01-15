@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "cra-template-pwa": "^1.0.3",
+    "npm": "^8.3.1",
+    "npx": "^10.2.2"
+  }
+}
