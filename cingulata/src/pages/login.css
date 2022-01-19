@@ -1,0 +1,30 @@
+form {
+    width: 80%;
+}
+
+input[type=password], input[type=email], input[type=text] {
+    width: 100%;
+    background-color: transparent;
+    border-color: transparent;
+    padding: 0.4rem;
+    color: white;
+}
+
+.row {
+    gap: 0.4rem;
+    display: flex;
+    align-items: center;
+}
+
+.group {
+    background-color: var(--surface);
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+}
+
+a {
+    text-decoration: none;
+    color: white;
+    font-weight: bold;
+}

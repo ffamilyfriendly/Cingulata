@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom"
+import React from "react"
 
 export default function FourZeroFour() {
     return(
@@ -8,7 +9,7 @@ export default function FourZeroFour() {
                 <p>Content Not Found</p>
                 <div className="ltr-center-children">
                     <Link className="btn btn-primary btn-large full-width margin-medium" to="/">
-                        Go Back
+                        Go Home
                     </Link>
                 </div>
             </div>

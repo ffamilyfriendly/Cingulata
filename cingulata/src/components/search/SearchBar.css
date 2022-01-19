@@ -1,0 +1,16 @@
+.searchbar {
+    background-color: rgb(10, 10, 10);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.5rem;
+}
+
+.searchbar > input {
+    background-color: transparent;
+    width: 80%;
+    color: white;
+    border-color: transparent;
+    font-size: 0.9rem;
+}

@@ -1,9 +1,19 @@
 :root {
-    --bg-colour: #191919;
+
+    --bg-colour: #111111;
     --on-bg: white;
 
+    --surface: #171717;
+    --on-surface: white;
+
     --primary: #D84727;
-    /* D84727 */
+    --secondary: #01949A;
+
+    --path: white;
+}
+
+input {
+    -webkit-appearance: none;
 }
 
 *, *::after, *::before {
@@ -32,6 +42,18 @@ body {
     justify-content: center;
 } 
 
+.align-right {
+    display: flex;
+    width: 100%;
+    justify-content: right;
+}
+
+.align-left {
+    display: flex;
+    width: 100%;
+    justify-content: left;
+}
+
 .full-width {
     width: 100%;
 }
@@ -52,10 +74,15 @@ body {
     padding: 0.5rem;
     border-radius: 0.7rem;
     transition: .2s;
+    border-color: transparent;
 }
 
 .btn:hover {
     transform: scale(1.05);
+}
+
+.btn-medium {
+    font-size: 1rem;
 }
 
 .btn-large {
@@ -65,4 +92,12 @@ body {
 
 .btn-primary {
     background-color: var(--primary);
+}
+
+.btn-secondary {
+    background-color: var(--secondary);
+}
+
+path {
+    fill: var(--path);
 }
