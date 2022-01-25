@@ -3,7 +3,7 @@ import React from "react"
 import { Link } from "react-router-dom";
 import "./login.css"
 
-export default function Login() {
+export default function Login(props) {
 
     const doLogin = (e) => {
         const email = e.target.querySelector("[type=email]")
@@ -14,7 +14,9 @@ export default function Login() {
             window.location.href = "/"
         })
         .catch(e => {
-            alert("Sign in failed. Correct password/username?")
+            console.log(e)
+            if(e.type === "HTTP_ERROR") props.setStatus({ time: 3, type:"error", text:"Network Error." })
+            else props.setStatus({ time: 3, type:"error", text:"Sign in Failed." })
             console.warn(e)
         })
         e.preventDefault()

@@ -1,0 +1,32 @@
+.status-bar {
+    width: 100%;
+    display: flex;
+    position: absolute;
+    z-index: 69;
+    justify-content: center;
+    transition: .4s;
+    transform: translateY(0%);
+}
+
+.status-bar > .content {
+    display: flex;
+    gap: 1rem;
+    font-size: large;
+    padding: 0.5rem;
+}
+
+.status-bar.info {
+    background-color: var(--info);
+}
+
+.status-bar.warning {
+    background-color: var(--warning);
+}
+
+.status-bar.error {
+    background-color: var(--error);
+}
+
+.animate-out {
+    transform: translateY(-120%);
+}

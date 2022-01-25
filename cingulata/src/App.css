@@ -1,15 +1,20 @@
 :root {
 
-    --bg-colour: #111111;
+    --bg-colour: black;
     --on-bg: white;
 
-    --surface: #171717;
+    --surface: #141414;
     --on-surface: white;
 
     --primary: #D84727;
     --secondary: #01949A;
 
     --path: white;
+
+    /* types */
+    --info: blue;
+    --warning: yellow;
+    --error: red;
 }
 
 input {

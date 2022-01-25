@@ -1,4 +1,5 @@
 import { PermissionsManager } from "./permissions"
+import Entity from "./entity"
 
 const setStoredToken = (token) => {
     localStorage.setItem("okapi_token", token)
@@ -18,6 +19,8 @@ const decodeJWT = (text) => {
     return JSON.parse( atob(segments[1]) )
 }
 
+const e = (code, data) => { return {errorMessage: code, errorData: data} }
+
 export class OkapiClient {
     constructor(base_url) {
         this.base = base_url
@@ -25,13 +28,37 @@ export class OkapiClient {
         this.loggedIn = true
         this.data = {};
         this.serverconf = null
+        this._internal = {
+            hasLostConn: false
+        }
         if(this.token) {
             this.data = decodeJWT(this.token)
         } else this.loggedIn = false
         this.perms = new PermissionsManager(this?.data.permissions)
 
+        //heartbeat
+        setInterval(() => {
+            this.getServerConfig(false)
+            .then(() => {
+                if(this._internal.hasLostConn) {
+                    this.onHeartBeatResumed()
+                }
+                this.onHeartBeat()
+                this._internal.hasLostConn = false
+            })
+            .catch(e => {
+                if(!this._internal.hasLostConn) this.onHeartBeatFailedOnce()
+                this._internal.hasLostConn = true
+                this.onHeartBeatFailed()
+            })
+        }, 10000)
+
         // events
         this.onLoggedIn = () => { }
+        this.onHeartBeatFailed = () => { }
+        this.onHeartBeatFailedOnce = () => { }
+        this.onHeartBeatResumed = () => { }
+        this.onHeartBeat = () => { }
     }
 
     req(path, body, options = { }) {
@@ -48,12 +75,18 @@ export class OkapiClient {
 
         if(body) _op.body = JSON.stringify(body)
 
-        console.log(_op)
-
         return new Promise((resolve, reject) => {
             fetch(`${this.base}${path}`, _op)
-            .then(o => resolve(o))
-            .catch(e => reject(e))
+            .then(o => {
+                o.json()
+                .then(jsData => {
+                    if(o.status.toString()[0] !== '2') reject( { status: o.status, statusText: o.statusText, type: "API_ERROR", message: jsData.message  } )
+                    resolve( { status: o.status, statusText: o.statusText, content: jsData.message||jsData  } )
+                })
+            })
+            .catch(e => {
+                reject({ type: "HTTP_ERROR", statusText: "Network Error", message: e })
+            })
         })
     }
 
@@ -63,17 +96,15 @@ export class OkapiClient {
         setStoredToken(token)
     }
 
-    getServerConfig() {
+    getServerConfig(cache = true) {
         return new Promise((resolve, reject) => {
-            if(this.serverconf) return resolve(this.serverconf)
+            if(this.serverconf && cache) return resolve(this.serverconf)
             this.req("/")
             .then(s => {
-                s.json()
-                .then(json => {
-                    this.serverconf = json
-                    resolve(json)
-                })
+                this.serverconf = s.content
+                resolve(s.content)
             })
+            .catch(e => reject(e))
         })
     }
 
@@ -87,16 +118,16 @@ export class OkapiClient {
             this.req("/user/login", { email, password }, { method: "POST" })
             .then(async r => {
                 if(r.status !== 200) {
-                    reject({ errorMessage: "api_error", errorData: await r.json() })
+                    reject(r)
                 } else {
-                    const _token = await r.text()
+                    const _token = r.content
                     this._setToken(_token)
                     resolve()
                     this.onLoggedIn()
                 }
             })
             .catch(e => {
-                reject({ errorMessage: "http_error", errorData: e })
+                reject(e)
             })
         })
     }
@@ -104,13 +135,23 @@ export class OkapiClient {
     register(email, password, invite) {
         return new Promise((resolve, reject) => { 
             this.req("/user", { email, password, invite, username: email.split("@")[0] }, { method: "POST" })
-            .then(async r => {
-                if(r.status === 201) resolve()
-                else reject({ errorMessage: "api_error", errorData: await r.json() })
+            .then(() => resolve())
+            .catch(e => reject(e))
+        })
+    }
+
+
+    //content
+    getChildren(id) {
+        return new Promise((resolve, reject) => {
+            this.req(`/content/${id}/children`)
+            .then(r => {
+                let rv = new Map()
+                for(let ent of r.content)
+                    rv.set(ent.id, new Entity(ent, this.req.bind(this)))
+                resolve(rv)
             })
-            .catch(e => {
-                reject({ errorMessage: "http_error", errorData: e })
-            })
+            .catch(err => reject(err))
         })
     }
 }

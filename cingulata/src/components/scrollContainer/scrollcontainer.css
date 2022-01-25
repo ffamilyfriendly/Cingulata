@@ -1,0 +1,19 @@
+.ScrollContainer {
+    height: calc(100% - 2rem);
+    display: flex;
+    overflow: scroll;
+    gap: 0.5rem;
+    scrollbar-width: none;
+}
+
+.ScrollContainer > div:first-child {
+    margin-left: 1rem;
+}
+
+.ScrollContainer::-webkit-scrollbar {
+    display: none;
+}
+
+.ScrollContainer > * {
+    flex: 0 0 auto;
+}

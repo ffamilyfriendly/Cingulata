@@ -1,0 +1,12 @@
+.Entity {
+    height: 100%;
+    width: auto;
+    overflow: hidden;
+    border-radius: 0.5rem;
+    perspective: 1px;
+}
+
+.Entity > img {
+    height: 100%;
+    width: auto;
+}
