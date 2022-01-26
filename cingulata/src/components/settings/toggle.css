@@ -1,0 +1,45 @@
+/*
+            <div className="Toggle">
+                <div className="ToggleContent">
+                    <div className="ToggleBody"></div>
+                    <div className="ToggleHead"></div>
+                </div>
+            </div>
+*/
+
+.Toggle {
+    width: 2.5rem;
+    height: 1.5rem;
+    background-color: #242424;
+    border-radius: 2rem;
+    overflow: hidden;
+}
+
+.ToggleContent {
+    position: relative;
+    width: 2.5rem;
+    height: 1.5rem;
+    transition: .3s;
+    transition-timing-function: ease-out;
+    transform: translateX(-38%);
+}
+
+.ToggleBody {
+    width: 2rem;
+    height: 1.5rem;
+    background-color: green;
+    position: absolute;
+}
+
+.ToggleHead {
+    height: 1.5rem;
+    width: 1.5rem;
+    background-color: white;
+    border-radius: 50%;
+    position: absolute;
+    right: 0;
+}
+
+.ToggleOn {
+    transform: translateX(0%);
+}

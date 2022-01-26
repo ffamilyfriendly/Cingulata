@@ -8,7 +8,7 @@ export default function FourZeroFour() {
                 <h1 style={{lineHeight: "9rem"}} className="title-gigantic">404</h1>
                 <p>Content Not Found</p>
                 <div className="ltr-center-children">
-                    <Link className="btn btn-primary btn-large full-width margin-medium" to="/">
+                    <Link className="btn btn-primary btn-large full-width margin-medium" to="/b/root">
                         Go Home
                     </Link>
                 </div>

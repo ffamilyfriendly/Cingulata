@@ -19,8 +19,6 @@ const decodeJWT = (text) => {
     return JSON.parse( atob(segments[1]) )
 }
 
-const e = (code, data) => { return {errorMessage: code, errorData: data} }
-
 export class OkapiClient {
     constructor(base_url) {
         this.base = base_url
@@ -147,7 +145,7 @@ export class OkapiClient {
             this.req(`/content/${id}/children`)
             .then(r => {
                 let rv = new Map()
-                for(let ent of r.content)
+                for(let ent of r.content.sort((a, b) => a.position - b.position))
                     rv.set(ent.id, new Entity(ent, this.req.bind(this)))
                 resolve(rv)
             })

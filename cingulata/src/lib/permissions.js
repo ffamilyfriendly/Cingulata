@@ -11,6 +11,7 @@ const UserPermissions = {
 export class PermissionsManager {
     constructor(flag = 0) {
         this.flag = flag
+        this.FLAGS = UserPermissions
     }
 
     setFlag(flag = 0) {

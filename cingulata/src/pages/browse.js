@@ -34,7 +34,6 @@ class Browse extends React.Component {
                 return cs
             })
 
-            console.log(this.state.media)
         })
         .catch(e => {
             this.setStatus({ text: e.statusText, type: "error" })

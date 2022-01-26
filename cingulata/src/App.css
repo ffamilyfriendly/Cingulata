@@ -106,3 +106,7 @@ body {
 path {
     fill: var(--path);
 }
+
+.lightly-padded {
+    padding: 1rem;
+}

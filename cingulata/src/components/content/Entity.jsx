@@ -10,7 +10,7 @@ export default class Entity extends React.Component {
     render() {
         return(
             <div className="Entity">
-                <img src={this.props.data.metadata.thumbnail} />
+                { this.props.data.type === "Category" ? <div></div> : <img alt={this.props.data.metadata.name} src={this.props.data.metadata.thumbnail} /> }
             </div>
         )
     }

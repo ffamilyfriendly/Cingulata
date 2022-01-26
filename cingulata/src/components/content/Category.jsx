@@ -17,11 +17,8 @@ export default class Category extends React.Component {
             .then(r => {
                 const contents = []
                 for(let [key, value] of r) {
-                    console.log(value)
                     contents.push(<Entity key={key} data={value} />)
                 }
-
-                console.log(contents)
 
                 this.setState(s => {
                     s.children = contents

@@ -1,0 +1,32 @@
+.NotLoggedIn {
+    background-color: var(--surface);
+    height: 30vh;
+    border-radius: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.NotLoggedIn > div > a {
+    margin-top: 0.5rem;
+}
+
+.SettingsSection {
+    margin-bottom: 1rem;
+}
+
+.settings {
+    background-color: var(--surface);
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+}
+
+.settingsRow {
+    margin-bottom: 0.6rem;
+    display: flex;
+    justify-content: space-between;
+}
+
+.settingsRow:last-child {
+    margin-bottom: 0;
+}
