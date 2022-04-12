@@ -18,16 +18,39 @@ const client = new OkapiClient(`${window.location.protocol}//${window.location.h
 
 export { client };
 
+function InfoScreen() {
+    if(!window.settings.toggled("Info Screen")) window.location.href = "/b/root"
+    return(
+        <div className="center">
+            <div>
+                <h1>Welcome to Armadillo!</h1>
+                
+                <br />
+                <h3>General Information</h3>
+                <ul>
+                    <li><b>This client:</b> <a className="text-primary" href="https://github.com/ffamilyfriendly/Cingulata/">Repo</a></li>
+                    <li><b>Server:</b> <a className="text-primary" href="https://github.com/ffamilyfriendly/Okapi/">Repo</a></li>
+                    <li><b>Donate:</b> <a className="text-primary" href="https://ko-fi.com/ffamilyfriendly">ko-fi</a></li>
+                </ul>
+                <small>to turn this screen of, disable "Info Screen" in settings</small>
+            </div>
+        </div>
+    )
+}
+
 export default function App() {
 
     const [ status, setStatus ] = useState(null)
+    const [ internet, setInternet ] = useState(true)
 
     client.onHeartBeatFailedOnce = () => {
         setStatus( { time: 3, text: "Lost Connection." } )
+        setInternet(false)
     }
 
     client.onHeartBeatResumed = () => {
         setStatus( { time: 3, text: "Regained Connection." } )
+        setInternet(true)
     }
 
     return (
@@ -39,11 +62,12 @@ export default function App() {
                     <Route path="/register" element={<Register setStatus={setStatus} />} />
                     <Route path="/b/:id" element={<Browse setStatus={setStatus} />} />
                     <Route path="/settings" element={<Settings setStatus={setStatus} />} />
+                    <Route path="/" element={ <InfoScreen /> } />
                     <Route path="*" element={ <FourZeroFour /> } />
                 </Routes>
                 <NavBar>
-                    <Link to="/b/root"> <NavBarItem type="browse" text="browse" />      </Link>
-                    <Link to="/search"> <NavBarItem type="search" text="search" />      </Link>
+                    <Link to={ internet ? "/b/root" : "#noInternet" }> <NavBarItem disabled={!internet} type="browse" text="browse" />      </Link>
+                    <Link to={ internet ? "/search" : "#noInternet" }> <NavBarItem disabled={!internet} type="search" text="search" />      </Link>
                     <Link to="/downloads"> <NavBarItem type="download" text="downloads" /> </Link>
                     <Link to="/settings"> <NavBarItem type="settings" text="settings" />  </Link>
                 </NavBar>

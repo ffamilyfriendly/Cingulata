@@ -130,6 +130,22 @@ export class OkapiClient {
         })
     }
 
+    logout() {
+        return new Promise((resolve, reject) => {
+            if(!this.loggedIn) return resolve()
+            this.req("/user/logout", {}, { method: "POST" })
+            .then(async r => {
+                if(r.status === 200) {
+                    localStorage.removeItem("okapi_token")
+                    return resolve()
+                }
+                else {
+                    reject(r)
+                }
+            })
+        })
+    }
+
     register(email, password, invite) {
         return new Promise((resolve, reject) => { 
             this.req("/user", { email, password, invite, username: email.split("@")[0] }, { method: "POST" })

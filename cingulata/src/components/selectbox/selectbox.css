@@ -1,0 +1,11 @@
+.row {
+    margin-bottom: 0.6rem;
+    display: flex;
+    justify-content: space-between;
+    background-color: rgba(255, 255, 255, 0.03);
+    padding: 0.5rem;
+}
+
+.row:last-child {
+    margin-bottom: 0;
+}

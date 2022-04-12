@@ -30,3 +30,25 @@
 .settingsRow:last-child {
     margin-bottom: 0;
 }
+
+.btn-settings {
+    min-width: 2.5rem;
+    background-color: transparent;
+    border: 2px;
+    color: var(--primary);
+    cursor: pointer;
+}
+
+input[type=password], input[type=email], input[type=text] {
+    width: 100%;
+    background-color: transparent;
+    border-color: transparent;
+    padding: 0.4rem;
+    color: white;
+}
+
+.row {
+    gap: 0.4rem;
+    display: flex;
+    align-items: center;
+}

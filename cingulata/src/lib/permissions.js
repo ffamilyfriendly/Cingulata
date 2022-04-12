@@ -18,6 +18,10 @@ export class PermissionsManager {
         this.flag = flag
     }
 
+    toggleBit(mask) {
+        this.flag |= mask
+    }
+
     /**
      * 
      * @param {UserPermission} perm 

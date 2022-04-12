@@ -14,3 +14,12 @@
     text-align: center;
     font-size: 0.6rem;
 }
+
+.NavBarItem.disabled {
+    cursor: not-allowed;
+    color: grey;
+}
+
+.NavBarItem.disabled > svg > path {
+    fill: gray;
+}
