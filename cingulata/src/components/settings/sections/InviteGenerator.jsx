@@ -26,9 +26,11 @@ function NewInvite() {
     const openModal = () => {
         toggleModal(true)
         setInvite("")
+        setError(null)
     }
 
     const doRequest = () => {
+        setError(null)
         const requestData = {}
 
         if(usesEnabled) requestData["uses"] = Number(uses)
@@ -49,7 +51,7 @@ function NewInvite() {
             if(res.content.url) setInvite(res.content.url)
         })
         .catch(err => {
-            console.log(err)
+            setError([err.type||"Error", err.message.toString()])
         })
 
         console.log(requestData)
@@ -61,7 +63,7 @@ function NewInvite() {
             <button onClick={openModal} className="btn-settings"> Generate </button>
             { showModal ? 
                 <Modal onDismiss={() => { console.log(permissions); toggleModal(false) }} title="New Invite">
-                    
+                    { error ? <div style={{"backgroundColor": "var(--error)"}} className="error full-width row"><p style={{"fontWeight": "bolder"}}>{error[0]}</p> <p>{error[1]}</p></div> : null }
                     {invite ? 
                         <div>
                             <h2>Invite Created!</h2>
@@ -109,12 +111,71 @@ function NewInvite() {
     )
 }
 
+function Invite(props) {
+
+    let [show, setShow] = useState(true)
+
+    const deleteInvite = () => {
+        client.req(`/invite/${props.id}`, {}, { method: "DELETE" })
+        .then(r => {
+            setShow(false)
+        })
+    }
+
+    return(
+        <div style={{"display": show ? "flex" : "none"}} className="row">
+            <div>
+                <p>{props.id}</p>
+                <small><b>Uses:</b> {props.uses < 0 ? "∞" : props.uses} | <b>Expires:</b> {props.expires ? "Yes" : "No"}</small>
+            </div>
+            <button onClick={deleteInvite} className="btn-settings">Delete</button>
+        </div>
+    )
+}
+
+function ManageInvites() {
+
+    let [modal, setModal] = useState(false)
+
+    let [invites, setInvites] = useState([])
+
+    const getInvites = () => {
+        client.req("/invite/all/all")
+        .then(a => {
+            if(a.status === 200) {
+                const invArr = a.content.map(inv => { return { id: inv.id, uses: inv.uses, expires: inv.expires > 0 } })
+                setInvites(invArr)
+            }
+        })
+    }
+
+    const openModal = () => {
+        getInvites()
+        setModal(true)
+    }
+
+    return(
+        <div className="settingsRow">
+            <p>Existing Invites</p>
+            <button onClick={openModal} className="btn-settings"> Manage </button>
+            { modal ?       
+                <Modal onDismiss={() => { setModal(false) }} title="Manage Invites">
+                    { invites ? invites.map(inv => { return( <Invite key={inv.id} expires={inv.expires} uses={inv.uses} id={inv.id} /> ) }) : null }
+                </Modal>
+                :
+                null
+            }
+        </div>
+    )
+}
+
 export default function InviteGenerator() {
     return(
         <div className="InviteGenerator">
             <h1>Invite Settings</h1>
             <div className="settings">
                 <NewInvite />
+                <ManageInvites />
             </div>
         </div>
     )

@@ -76,6 +76,7 @@ export class OkapiClient {
         return new Promise((resolve, reject) => {
             fetch(`${this.base}${path}`, _op)
             .then(o => {
+                if(o.status === 204) return resolve()
                 o.json()
                 .then(jsData => {
                     if(o.status.toString()[0] !== '2') reject( { status: o.status, statusText: o.statusText, type: "API_ERROR", message: jsData.message  } )
@@ -133,7 +134,7 @@ export class OkapiClient {
     logout() {
         return new Promise((resolve, reject) => {
             if(!this.loggedIn) return resolve()
-            this.req("/user/logout", {}, { method: "POST" })
+            this.req(`/user/logout/${this.token}`, {}, { method: "POST" })
             .then(async r => {
                 if(r.status === 200) {
                     localStorage.removeItem("okapi_token")

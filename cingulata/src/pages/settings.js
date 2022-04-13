@@ -99,6 +99,7 @@ function AdminSettings() {
 }
 
 export default function Settings() {
+    console.log(client.perms.hasPermission(client.perms.FLAGS.GenerateInvite), client.perms.flag)
     return(
         <div className="Settings lightly-padded">
             <div className="SettingsSection">
@@ -109,21 +110,8 @@ export default function Settings() {
                 <h1>Application Settings</h1>
                 <ApplicationSettings />
             </div>
-            { client.perms.hasPermission(client.perms.FLAGS.Administrator) ? <AdminSettings /> : null }
-            { client.perms.hasPermission(client.perms.FLAGS.GenerateInvite) ? <InviteGenerator /> : null }
+            { client.perms.hasPermission("Administrator") ? <AdminSettings /> : null }
+            { client.perms.hasPermission("GenerateInvite") ? <InviteGenerator /> : null }
         </div>
     )
 }
-
-/* 
-            <div>
-                <h1 style={{lineHeight: "9rem"}} className="title-gigantic">404</h1>
-                <p>Content Not Found</p>
-                <div className="ltr-center-children">
-                    <Link className="btn btn-primary btn-large full-width margin-medium" to="/b/root">
-                        Go Home
-                    </Link>
-                </div>
-            </div>
-
-*/

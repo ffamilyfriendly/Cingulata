@@ -51,4 +51,5 @@ input[type=password], input[type=email], input[type=text] {
     gap: 0.4rem;
     display: flex;
     align-items: center;
+    border-radius: 0.5rem;
 }
