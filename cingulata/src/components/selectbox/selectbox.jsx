@@ -8,8 +8,13 @@ export default class SelectBox extends React.Component {
         super(props)
 
         let obj = {}
-        for(let item of props.items)
-            obj[item] = false
+
+        if(props.hasValues) {
+            obj = props.items
+        } else {
+            for(let item of props.items)
+                obj[item] = false
+        }
 
         this.state = obj
     }
@@ -27,7 +32,7 @@ export default class SelectBox extends React.Component {
                     return(
                         <div key={item} className="item row">
                             <p>{item}</p>
-                            <Toggle onToggle={(v) => { this.handleChange(item, v) }} />
+                            <Toggle toggled={this.state[item]} onToggle={(v) => { this.handleChange(item, v) }} />
                         </div>
                     )
                 }) }

@@ -1,0 +1,40 @@
+.holdbutton {
+    font-size: smaller;
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.7rem;
+    transition: 0.2s;
+}
+
+.blinder {
+    position: absolute;
+    z-index: 1;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    width: 100%;
+}
+
+.holdbutton p {
+    padding: 0.6rem;
+    z-index: 2;
+    text-align: center;
+}
+
+.holdbutton:hover {
+    transform: scale(1.05);
+}
+
+.progress {
+    animation-name: doProg;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+}
+
+@keyframes doProg {
+    from {
+        width: 100%;
+    }
+    to {
+        width: 0%;
+    }
+}

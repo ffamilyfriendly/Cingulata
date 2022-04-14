@@ -6,27 +6,54 @@
     justify-content: center;
     transition: .4s;
     transform: translateY(0%);
+    padding: 1rem;
 }
 
 .status-bar > .content {
     display: flex;
     gap: 1rem;
     font-size: large;
+    width: 90%;
     padding: 0.5rem;
+    border-radius: 0.25rem;
 }
 
-.status-bar.info {
+.status-bar.info > .content {
     background-color: var(--info);
 }
 
-.status-bar.warning {
-    background-color: var(--warning);
+.status-bar.success > .content {
+    background-color: var(--success);
 }
 
-.status-bar.error {
+.status-bar.warning > .content {
+    background-color: var(--warning);
+    color: black;
+}
+
+.status-bar.warning path {
+    fill: black !important;
+}
+
+.status-bar.error > .content {
     background-color: var(--error);
 }
 
 .animate-out {
     transform: translateY(-120%);
+}
+
+.animate-in {
+    animation-name: anim-in;
+    animation-duration: .4s;
+}
+
+@keyframes anim-in {
+    from {
+        transform: translateY(-120%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
 }

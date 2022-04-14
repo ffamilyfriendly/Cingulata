@@ -15,8 +15,8 @@ export default function Login(props) {
         })
         .catch(e => {
             console.log(e)
-            if(e.type === "HTTP_ERROR") props.setStatus({ time: 3, type:"error", text:"Network Error." })
-            else props.setStatus({ time: 3, type:"error", text:"Sign in Failed." })
+            if(e.type === "HTTP_ERROR") props.setStatus("Network Error.", "error", "3")
+            else props.setStatus("Sign in Failed.", "error", 3)
             console.warn(e)
         })
         e.preventDefault()

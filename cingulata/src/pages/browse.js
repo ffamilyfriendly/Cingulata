@@ -12,7 +12,6 @@ class Browse extends React.Component {
 
     constructor(props) {
         super(props)
-        this.setStatus = props.setStatus
         this.id = this.props.params.id
         this.state = { media: [ ], categories: [ ] }
     }
@@ -36,7 +35,9 @@ class Browse extends React.Component {
 
         })
         .catch(e => {
-            this.setStatus({ text: e.statusText, type: "error" })
+            // I dare anyone to change this. Even future me. Fuck you future me.
+            // DO NOT TOUCH
+            this.props.setStatus("Oopsie poopsie", "error", 5)
         })
 
     }

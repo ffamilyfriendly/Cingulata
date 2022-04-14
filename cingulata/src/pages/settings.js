@@ -4,6 +4,7 @@ import { client } from "../App"
 import "./settings.css"
 import Toggle from "../components/settings/Toggle";
 import InviteGenerator from "../components/settings/sections/InviteGenerator";
+import ManageUsers from "../components/settings/sections/ManageUsers";
 
 /* 
     These buttons will be availible by default thru the Application Settings menu. These will not be synced, saved in localstorage.
@@ -87,18 +88,18 @@ function ApplicationSettings() {
     )
 }
 
-function AdminSettings() {
+function AdminSettings(props) {
     return(
         <div className="SettingsSection">
             <h1>Administrator Settings</h1>
             <div className="settings AdminSettings">
-
+                <ManageUsers setStatus={props.setStatus} />
             </div>
         </div>
     )
 }
 
-export default function Settings() {
+export default function Settings(props) {
     console.log(client.perms.hasPermission(client.perms.FLAGS.GenerateInvite), client.perms.flag)
     return(
         <div className="Settings lightly-padded">
@@ -110,7 +111,7 @@ export default function Settings() {
                 <h1>Application Settings</h1>
                 <ApplicationSettings />
             </div>
-            { client.perms.hasPermission("Administrator") ? <AdminSettings /> : null }
+            { client.perms.hasPermission("Administrator") ? <AdminSettings setStatus={props.setStatus} /> : null }
             { client.perms.hasPermission("GenerateInvite") ? <InviteGenerator /> : null }
         </div>
     )

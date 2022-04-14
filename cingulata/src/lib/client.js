@@ -29,10 +29,20 @@ export class OkapiClient {
         this._internal = {
             hasLostConn: false
         }
+        this.perms = new PermissionsManager(0)
+
         if(this.token) {
-            this.data = decodeJWT(this.token)
+            this.validateSession()
+            .then(ans => {
+                if(ans) {
+                    this.data = decodeJWT(this.token) 
+                    this.perms = new PermissionsManager(this?.data.permissions)
+                } else {
+                    localStorage.removeItem("okapi_token")
+                    this.loggedIn = false
+                }
+            })
         } else this.loggedIn = false
-        this.perms = new PermissionsManager(this?.data.permissions)
 
         //heartbeat
         setInterval(() => {
@@ -74,17 +84,40 @@ export class OkapiClient {
         if(body) _op.body = JSON.stringify(body)
 
         return new Promise((resolve, reject) => {
-            fetch(`${this.base}${path}`, _op)
+            try {
+                fetch(`${this.base}${path}`, _op)
+                .then(o => {
+                    if(o.status === 204) return resolve()
+                    o.json()
+                    .then(jsData => {
+                        if(o.status.toString()[0] !== '2') reject( { status: o.status, statusText: o.statusText, type: "API_ERROR", message: jsData.message  } )
+                        resolve( { status: o.status, statusText: o.statusText, content: jsData.message||jsData  } )
+                    })
+                    .catch(e => {
+                        reject({ type: "JSON_ERROR", statusText: "could not JSON parse", message: e })
+                    })
+                })
+                .catch(e => {
+                    reject({ type: "HTTP_ERROR", statusText: "Network Error", message: e })
+                })
+            } catch(e) {
+                reject({ type:"GENERIC_ERROR", statusText:"Something went wrong", message: e })
+            }
+        })
+    }
+
+    validateSession() {
+        const op = { headers: [ ["token", this.token] ]}
+        return new Promise((resolve, reject) => {
+            fetch(`${this.base}/user/all`, op)
             .then(o => {
-                if(o.status === 204) return resolve()
-                o.json()
-                .then(jsData => {
-                    if(o.status.toString()[0] !== '2') reject( { status: o.status, statusText: o.statusText, type: "API_ERROR", message: jsData.message  } )
-                    resolve( { status: o.status, statusText: o.statusText, content: jsData.message||jsData  } )
+                o.text()
+                .then(res => {
+                    resolve(!res.includes("The request requires user authentication."))
                 })
             })
             .catch(e => {
-                reject({ type: "HTTP_ERROR", statusText: "Network Error", message: e })
+                reject(e)
             })
         })
     }
@@ -134,10 +167,10 @@ export class OkapiClient {
     logout() {
         return new Promise((resolve, reject) => {
             if(!this.loggedIn) return resolve()
+            localStorage.removeItem("okapi_token")
             this.req(`/user/logout/${this.token}`, {}, { method: "POST" })
             .then(async r => {
                 if(r.status === 200) {
-                    localStorage.removeItem("okapi_token")
                     return resolve()
                 }
                 else {

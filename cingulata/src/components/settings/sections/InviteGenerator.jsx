@@ -62,7 +62,7 @@ function NewInvite() {
             <p>New Invite</p>
             <button onClick={openModal} className="btn-settings"> Generate </button>
             { showModal ? 
-                <Modal onDismiss={() => { console.log(permissions); toggleModal(false) }} title="New Invite">
+                <Modal onDismiss={() => { toggleModal(false) }} title="New Invite">
                     { error ? <div style={{"backgroundColor": "var(--error)"}} className="error full-width row"><p style={{"fontWeight": "bolder"}}>{error[0]}</p> <p>{error[1]}</p></div> : null }
                     {invite ? 
                         <div>

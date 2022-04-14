@@ -43,25 +43,30 @@ export default function App() {
     const [ status, setStatus ] = useState(null)
     const [ internet, setInternet ] = useState(true)
 
+    const statusBar = ( text, type, time = null ) => {
+        setStatus({ time, text, type })
+        if(time) setTimeout(() => { setStatus(null); }, ((time + 2) * 1000))
+    }
+
     client.onHeartBeatFailedOnce = () => {
-        setStatus( { time: 3, text: "Lost Connection." } )
+        statusBar("Lost Connection", "warning", 3)
         setInternet(false)
     }
 
     client.onHeartBeatResumed = () => {
-        setStatus( { time: 3, text: "Regained Connection." } )
+        statusBar("Regained Connection", "info", 3)
         setInternet(true)
     }
 
     return (
         <div>
-            { status ? <StatusBar setStatus={setStatus} time={status.time} type={status.type} text={status.text} /> : null }
+            { status ? <StatusBar time={status?.time} type={status?.type} text={status?.text} /> : null }
             <Router>
                 <Routes>
-                    <Route path="/login" element={<Login setStatus={setStatus} />} />
-                    <Route path="/register" element={<Register setStatus={setStatus} />} />
-                    <Route path="/b/:id" element={<Browse setStatus={setStatus} />} />
-                    <Route path="/settings" element={<Settings setStatus={setStatus} />} />
+                    <Route path="/login" element={<Login setStatus={statusBar} />} />
+                    <Route path="/register" element={<Register setStatus={statusBar} />} />
+                    <Route path="/b/:id" element={<Browse setStatus={statusBar} />} />
+                    <Route path="/settings" element={<Settings setStatus={statusBar} />} />
                     <Route path="/" element={ <InfoScreen /> } />
                     <Route path="*" element={ <FourZeroFour /> } />
                 </Routes>
