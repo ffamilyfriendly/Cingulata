@@ -1,0 +1,23 @@
+.fallback {
+    height: 10rem;
+    width: 7rem;
+    background-color: rgb(85, 85, 85);
+    font-size: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 0rem;
+    padding: 0;
+    overflow: hidden;
+}
+
+.image {
+    overflow: hidden;
+    height: 10rem;
+}
+
+img {
+    width: auto;
+    height: 10rem;
+    object-fit: contain;
+}

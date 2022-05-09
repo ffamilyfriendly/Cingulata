@@ -1,3 +1,5 @@
+
+/*
 import React from "react";
 import { client } from "../App";
 import { useParams } from "react-router-dom";
@@ -56,4 +58,4 @@ class Browse extends React.Component {
     }
 }
 
-export default withParams(Browse)
+export default withParams(Browse)*/

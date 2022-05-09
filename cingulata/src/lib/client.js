@@ -87,7 +87,7 @@ export class OkapiClient {
             try {
                 fetch(`${this.base}${path}`, _op)
                 .then(o => {
-                    if(o.status === 204) return resolve()
+                    if(o.status === 204 || o.status === 201) return resolve()
                     o.json()
                     .then(jsData => {
                         if(o.status.toString()[0] !== '2') reject( { status: o.status, statusText: o.statusText, type: "API_ERROR", message: jsData.message  } )

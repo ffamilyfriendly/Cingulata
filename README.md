@@ -14,13 +14,13 @@ This is the client for [Okapi](https://github.com/ffamilyfriendly/okapi)
   - [X] Create invite
   - [X] Delete invite
 - [ ] Content Management
-  - [ ] Create content
+  - [X] Create content (entity can be created, need to create metadata & sources)
   - [ ] Edit content
   - [ ] Delete content
   - [ ] Metadata fetcher (needs to be created on backend as well)
 - [ ] Content
   - [ ] Browsing of content
-  - [ ] Searching of content
+  - [X] Searching of content
   - [ ] Playing content
     - [ ] Video controlls
     - [ ] Audio controlls

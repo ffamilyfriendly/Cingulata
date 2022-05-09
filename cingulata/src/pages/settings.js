@@ -5,6 +5,7 @@ import "./settings.css"
 import Toggle from "../components/settings/Toggle";
 import InviteGenerator from "../components/settings/sections/InviteGenerator";
 import ManageUsers from "../components/settings/sections/ManageUsers";
+import ContentSettings from "../components/settings/sections/ContentSettings";
 
 /* 
     These buttons will be availible by default thru the Application Settings menu. These will not be synced, saved in localstorage.
@@ -113,6 +114,7 @@ export default function Settings(props) {
             </div>
             { client.perms.hasPermission("Administrator") ? <AdminSettings setStatus={props.setStatus} /> : null }
             { client.perms.hasPermission("GenerateInvite") ? <InviteGenerator /> : null }
+            { client.perms.hasPermission("ManageContent") ? <ContentSettings setStatus={ props.setStatus } /> : null }
         </div>
     )
 }

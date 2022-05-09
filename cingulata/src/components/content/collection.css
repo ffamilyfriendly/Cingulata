@@ -1,0 +1,20 @@
+.collection .image {
+    height: 10rem;
+    max-width: 30%;
+}
+
+.collection {
+    width: 100%;
+    background-color: var(--surface);
+    display: flex;
+    gap: 0.5rem;
+    height: 10rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.meta {
+    max-width: 60%;
+    max-height: 10rem;
+    overflow: hidden;
+}
