@@ -13,6 +13,7 @@ import Login from "./pages/login"
 import Register from "./pages/register"
 import Browse from "./pages/browse"
 import Settings from "./pages/settings"
+import Edit from "./pages/edit"
 
 const client = new OkapiClient(`${window.location.protocol}//${window.location.hostname}:3000`)
 
@@ -39,7 +40,6 @@ function InfoScreen() {
 }
 
 export default function App() {
-
     const [ status, setStatus ] = useState(null)
     const [ internet, setInternet ] = useState(true)
 
@@ -66,6 +66,7 @@ export default function App() {
                     <Route path="/login" element={<Login setStatus={statusBar} />} />
                     <Route path="/register" element={<Register setStatus={statusBar} />} />
                     { false ? <Route path="/b/:id" element={<Browse setStatus={statusBar} />} /> : null}
+                    <Route path="/edit/:id" element={<Edit setStatus={statusBar} />} />
                     <Route path="/settings" element={<Settings setStatus={statusBar} />} />
                     <Route path="/" element={ <InfoScreen /> } />
                     <Route path="*" element={ <FourZeroFour /> } />

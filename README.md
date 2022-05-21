@@ -15,7 +15,7 @@ This is the client for [Okapi](https://github.com/ffamilyfriendly/okapi)
   - [X] Delete invite
 - [ ] Content Management
   - [X] Create content (entity can be created, need to create metadata & sources)
-  - [ ] Edit content
+  - [X] Edit content (entity can be edited, no support for metadata & sources yet)
   - [ ] Delete content
   - [ ] Metadata fetcher (needs to be created on backend as well)
 - [ ] Content

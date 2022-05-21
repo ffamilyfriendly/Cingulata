@@ -13,7 +13,7 @@ import { client } from "../../../App"
     next: <opt> id of next content after playback for current is done (may only be Series, Movie, or Audio)
 
 */
-function BaseEntityManager(props) {
+export function BaseEntityManager(props) {
     const [entityType, setEntityType] = useState(props.entityType||"NO")
     const [priv, setPrivate] = useState(props.private||false)
     const [position, setPosition] = useState(props.position||0)
@@ -30,11 +30,18 @@ function BaseEntityManager(props) {
         
         if(errs.length > 0) return props.setStatus(errs, "error", 5)
 
-        client.req("/content/entity", { parent, flag: priv ? 1 << 0 : 0, entity_type: entityType, position: Number(position), next }, { method: "POST" })
+        let url = "/content/entity"
+        let body = { parent, flag: priv ? 1 << 0 : 0, entity_type: entityType, position: Number(position), next }
+        if(props.edit) {
+            url = `/content/entity/${props.id}`
+            body = { parent, flag: priv ? 1 << 0 : 0, position: Number(position), next }
+        }
+
+        client.req(url, body, { method: props.edit ? "PATCH" : "POST" })
         .then((e) => {
-            if(e.content) {
+            if(!props.edit && e.content) {
                 window.location = `/edit/${e.content}`
-            }
+            } else props.setStatus("saved entity data", "success", 5)
         })
         .catch(e => {
             props.setStatus("Something went wrong. (check logs)", "error", 5)
@@ -44,13 +51,13 @@ function BaseEntityManager(props) {
 
     return(
         <div className="baseEntity">
-            <div className="row">
+            { !props.edit ? <div className="row">
                 <p>Entity type</p>
                 <select onChange={(ev) => {setEntityType(ev.target.value)}} value={entityType}>
                     <option disabled value="NO" key="NO">select a type</option>
                     { ["Audio", "Movie", "Series", "Category"].map(i => <option key={i}>{i}</option>) }
                 </select>
-            </div>
+            </div> : null}
             <div className="row">
                 <p>Private</p>
                 <Toggle toggled={priv} handleClick={(v) => setPrivate(v)} />
