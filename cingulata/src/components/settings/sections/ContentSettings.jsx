@@ -2,17 +2,8 @@ import React, { useState } from "react"
 import Modal from "../../modal/modal"
 import SearchBar from "../../search/SearchBar";
 import Toggle from "../Toggle";
-import "./ContentSettings.css"
 import { client } from "../../../App"
 
-/*
-    parent: <opt> def "root"
-    flag: entityflag, public = 0, private = 1 << 0 (eq 1)
-    entity_type: Audio, Movie, Series, Category
-    position: <opt> def 0
-    next: <opt> id of next content after playback for current is done (may only be Series, Movie, or Audio)
-
-*/
 export function BaseEntityManager(props) {
     const [entityType, setEntityType] = useState(props.entityType||"NO")
     const [priv, setPrivate] = useState(props.private||false)
@@ -31,10 +22,10 @@ export function BaseEntityManager(props) {
         if(errs.length > 0) return props.setStatus(errs, "error", 5)
 
         let url = "/content/entity"
-        let body = { parent, flag: priv ? 1 << 0 : 0, entity_type: entityType, position: Number(position), next }
+        let body = { parent, flag: priv ? 1 : 0, entity_type: entityType, position: Number(position), next }
         if(props.edit) {
             url = `/content/entity/${props.id}`
-            body = { parent, flag: priv ? 1 << 0 : 0, position: Number(position), next }
+            body = { parent, flag: priv ? 1 : 0, position: Number(position), next }
         }
 
         client.req(url, body, { method: props.edit ? "PATCH" : "POST" })
@@ -60,7 +51,7 @@ export function BaseEntityManager(props) {
             </div> : null}
             <div className="row">
                 <p>Private</p>
-                <Toggle toggled={priv} handleClick={(v) => setPrivate(v)} />
+                <Toggle toggled={priv} onToggle={(v) => setPrivate(v)} />
             </div>
             <div className="row">
                 <p>Position</p>

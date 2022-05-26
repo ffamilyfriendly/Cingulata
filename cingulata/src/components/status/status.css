@@ -1,7 +1,7 @@
 .status-bar {
     width: 100%;
     display: flex;
-    position: absolute;
+    position: fixed;
     z-index: 69;
     justify-content: center;
     transition: .4s;

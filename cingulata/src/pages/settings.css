@@ -47,6 +47,15 @@ input[type=password], input[type=email], input[type=text] {
     color: white;
 }
 
+.row input[type=text], .row input[type="number"], .row input[type=url] {
+    background-color: var(--surface);
+    border-radius: .2rem;
+    border: 0;
+    color: white;
+    padding: 0.5rem;
+    width: inherit;
+}
+
 .row {
     gap: 0.4rem;
     display: flex;
