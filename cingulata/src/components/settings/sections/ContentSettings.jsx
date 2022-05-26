@@ -3,6 +3,7 @@ import Modal from "../../modal/modal"
 import SearchBar from "../../search/SearchBar";
 import Toggle from "../Toggle";
 import { client } from "../../../App"
+import HoldButton from "../HoldButton";
 
 export function BaseEntityManager(props) {
     const [entityType, setEntityType] = useState(props.entityType||"NO")
@@ -40,6 +41,20 @@ export function BaseEntityManager(props) {
         })
     }
 
+    const deleteEntity = () => {
+        client.req(`/content/${props.id}/entity`, {}, { method: "DELETE" })
+        .then(() => {
+            props.setStatus("Entity deleted", "success", 5)
+            setTimeout(() => {
+                window.location = "/settings"
+            }, 5000)
+        })
+        .catch((e) => {
+            props.setStatus("Something went wrong. (check logs)", "error", 5)
+            console.error(e)
+        })
+    }
+
     return(
         <div className="baseEntity">
             { !props.edit ? <div className="row">
@@ -69,6 +84,7 @@ export function BaseEntityManager(props) {
             </div>
 
             <button onClick={submitEntity} className="btn btn-success full-width">Submit</button>
+            {props.edit ? <HoldButton delay={5} onClick={() => deleteEntity()} className="full-width btn-error">Delete</HoldButton> : null}
         </div>
     )
 }
