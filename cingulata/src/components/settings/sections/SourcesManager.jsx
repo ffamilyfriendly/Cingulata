@@ -1,6 +1,4 @@
 import React, { useState } from "react"
-import SearchBar from "../../search/SearchBar";
-import Toggle from "../Toggle";
 import { client } from "../../../App"
 import "./sources.css"
 import Icon from "../../icon";
@@ -10,7 +8,6 @@ function ReorderList(props) {
 
     let spacerIterator = -1
     let selectedPosition = null
-    let selectedSource = null
 
     function Spacer(props) {
 
@@ -25,7 +22,7 @@ function ReorderList(props) {
         }
 
         return (
-            <div onDragEnter={enter} onDragLeave={exit} key={props.position} id={props.position} className="reorder-spacer hidden"></div>
+            <div onDragEnter={enter} onDragLeave={exit} id={props.position} className="reorder-spacer hidden"></div>
         )
     }
 
@@ -33,11 +30,9 @@ function ReorderList(props) {
 
         let last
 
-        function handleEnd(source) {
-            console.log("yo")
-            selectedSource = source
-            console.log(selectedPosition, selectedSource)
+        function handleEnd() {
             if(last) last.classList.add("hidden")
+            if(props.handlePositionChanged) props.handlePositionChanged(selectedPosition)
         }
 
         // ironic name since this is only used for touch. Cba to change lol
@@ -68,10 +63,10 @@ function ReorderList(props) {
     let elemlist = []
     for(let child of props.children) {
         spacerIterator += 1
-        elemlist.push(<Spacer position={spacerIterator} />, <ReorderElement source={child.props.source} key={child.id}> { child } </ReorderElement>)
+        elemlist.push(<Spacer key={spacerIterator} position={spacerIterator} />, <ReorderElement handlePositionChanged={child.props.positionchanged} source={child.props.source} key={child.props.id}> { child } </ReorderElement>)
     }
     spacerIterator += 1
-    elemlist.push(<Spacer position={spacerIterator}/>)
+    elemlist.push(<Spacer key={spacerIterator} position={spacerIterator}/>)
 
     return (
         <div className="reorderlist">
@@ -88,13 +83,62 @@ function ReorderList(props) {
 
 // onSubmit, edit
 export default function SourcesManager(props) {
-    let [sources, setSources] = useState([ { parent:"a", path:"/media/cum.mp4", position: 52, id:"a" }, { parent:"a", path:"aa", position: 2, id:"b" }, { parent:"a", path:"a", position: 50, id:"c" }, { parent:"a", path:"a", position: 0, id:"d" } ])
+    let [sources, setSources] = useState([ { parent:"a", path:"/media/test/test/test/assdasd.mpg", position: 1, id:"a" }, { parent:"a", path:"b", position: 2, id:"b" }, { parent:"a", path:"c", position: 30, id:"c" }, { parent:"a", path:"d", position: 41, id:"d" } ])
     const tSources = sources.sort((a,b) => a.position - b.position)
-    console.log(sources, props.sources)
+
+    const positionChanged = (source, pos) => {
+        // do api shit firstly
+        // endpoint is /content/source/<id> btw
+        // takes struct shown above but everything is an option so just send position as the body 
+
+        source.position = pos
+        let tempList = [source]
+        // handle re-order of elements
+        for(let i = 0; i < tSources.length; i++) {
+            let elem = tSources[i]
+            if(elem.id != source.id) {
+                elem.position = i
+                tempList.push(elem)
+            }
+        }
+
+        tempList = tempList.sort((a,b) => a.position - b.position)
+
+        // update state 
+        setSources(tempList)
+    }
+
+    // had to make this to make react stop fucking complaining about me passing a function to a div attr
+    function SourceElement(props) {
+
+        const deleteSource = (id) => {
+            // /content/ID/source
+            client.req(`/content/${id}/source`, {}, { method: "DELETE" })
+            .then(res => {
+                props.setStatus("Deleted source.", "success", 3)
+                let temp = tSources.filter(a => a.id != id)
+                setSources(temp)
+            })
+            .catch(e => {
+                props.setStatus("Could not remove source. (check logs)", "error", 5)
+                console.log(e)
+            })
+        }
+
+        return (
+            <div className="source row">
+                <p className="btn-settings">{props.source.path}</p>
+                <a onClick={() => deleteSource(props.source.id)} href="#bin"><Icon type="bin" /></a>
+            </div>
+        )
+    }
+
+    // <div positionchanged={(e) => positionChanged(s.id,e)} source={s} key={s.id} className="source row"><p className="btn-settings">{s.path}</p></div>
+
     return(
         <div className="baseEntity">
             <ReorderList>
-                {tSources.map(s => <div source={s} key={s.id} className="source row"><p className="btn-settings">{s.path}</p></div>)}
+                {tSources.map(s => <SourceElement setStatus={props.setStatus} key={s.id} positionchanged={(e) => positionChanged(s, e)} source={s} />)}
             </ReorderList>
         </div>
     )

@@ -49,7 +49,7 @@ export default function Edit(props) {
             </div>
             <div>
                 <h1>Sources</h1>
-                {entity ? <SourcesManager parent={entity.id} sources={entity?.sources} /> : null }
+                {entity ? <SourcesManager setStatus={props.setStatus} parent={entity.id} sources={entity?.sources} /> : null }
             </div>
             <div className="spacer"/>
         </div>
