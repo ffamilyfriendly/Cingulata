@@ -1,0 +1,24 @@
+.reorder-spacer {
+    width: 100%;
+    background-color: rgba(18, 216, 18, 0.616);
+    border: 0.3rem solid rgb(34, 209, 34);
+    border-radius: 0.5rem;
+    height: 2rem;
+    padding: 1rem;
+}
+
+.reorderelement {
+    border-radius: .5rem;
+    cursor: move;
+}
+
+.hidden {
+    padding: 0;
+    height: 0.5rem;
+    border-color: transparent;
+    background-color: transparent;
+}
+
+svg {
+    touch-action: none;
+}

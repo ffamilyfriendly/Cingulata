@@ -140,6 +140,6 @@ button:disabled {
                                   supported by Chrome, Edge, Opera and Firefox */
 }
 
-spacer {
+.spacer {
     padding: 2.5rem;
 }

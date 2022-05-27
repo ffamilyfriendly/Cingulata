@@ -2,14 +2,14 @@
     margin-bottom: 0.6rem;
     display: flex;
     justify-content: space-between;
-    background-color: rgba(255, 255, 255, 0.03);
+    background-color: rgba(255, 255, 255, 0.09);
     padding: 0.5rem;
 }
 
 .fat-row {
     margin-bottom: 0.6rem;
     display: block;
-    background-color: rgba(255, 255, 255, 0.03);
+    background-color: rgba(255, 255, 255, 0.09);
     padding: 0.5rem;
 }
 
@@ -20,7 +20,7 @@
 
 .fat-row textarea {
     width: 100%;
-    background-color: var(--surface);
+    background-color: rgba(255, 255, 255, 0.09);
     color: white;
     border: none;
     border-radius: .2rem;

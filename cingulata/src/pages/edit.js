@@ -3,22 +3,14 @@ import { useParams } from "react-router"
 import { client } from "../App"
 import { BaseEntityManager } from "../components/settings/sections/ContentSettings"
 import MetaDataManager from "../components/settings/sections/MetadataSettings"
-
-/*
-    const [entityType, setEntityType] = useState(props.entityType||"NO")
-    const [priv, setPrivate] = useState(props.private||false)
-    const [position, setPosition] = useState(props.position||0)
-    const [parent, setParent] = useState(props.parent||"root")
-    const [next, setNext] = useState(props.next||"")
-*/
+import SourcesManager from "../components/settings/sections/SourcesManager"
 
 export default function Edit(props) {
 
     const { id } = useParams()
 
     let [entity, setEntity] = useState(null)
-    let [metadata, setMetadata] = useState(null)
-    let [sources, setSources] = useState([])
+    let [wentWrong, setWentWrong] = useState(false)
 
     let [metadataMessage, setMetadataMessage] = useState(true)
 
@@ -27,15 +19,18 @@ export default function Edit(props) {
         client.req(`/content/${id}`)
         .then(res => {
             if(res.content) setEntity(res.content)
-            if(res.content.metadata) setMetadata(res.content.metadata)
         })
         .catch(e => {
             console.error(e)
+            // this is needed so the code does not go into a loop due to the status change that happens during setStatus. Error might happen if user tries to edit something without credentials / entity does not exist
+            setWentWrong(true)
             props.setStatus("something went wrong.", "error", 5)
         })
     }
-    console.log(metadata)
-    if(!entity) getContent()
+
+    let metadata;
+    if(!entity && !wentWrong) getContent()
+    else metadata = entity.metadata
 
     return(
         <div>
@@ -50,9 +45,13 @@ export default function Edit(props) {
                         <p>This entity has no metadata. Metadata will be created when you click submit below</p>
                     </div>      
                 }
-                { metadata ? <MetaDataManager parent={entity.id} thumbnail={metadata.thumbnail} banner={metadata.banner} description={metadata.description} name={metadata.name} rating={Number(metadata.rating)} age_rating={metadata.age_rating} language={metadata.language} year={Number(metadata.year)} setStatus={props.setStatus} edit={(metadata || !metadataMessage )} onSubmit={() => setMetadataMessage(false)} /> : null}
-                <spacer/>
+                { entity ? <MetaDataManager parent={entity.id} thumbnail={metadata?.thumbnail} banner={metadata?.banner} description={metadata?.description} name={metadata?.name} rating={Number(metadata?.rating)} age_rating={metadata?.age_rating} language={metadata?.language} year={Number(metadata?.year)} setStatus={props.setStatus} edit={(metadata || !metadataMessage )} onSubmit={() => setMetadataMessage(false)} /> : null}
             </div>
+            <div>
+                <h1>Sources</h1>
+                {entity ? <SourcesManager parent={entity.id} sources={entity?.sources} /> : null }
+            </div>
+            <div className="spacer"/>
         </div>
     )
 }
