@@ -36,6 +36,7 @@ export default function Edit(props) {
         <div>
             <div>
                 <h1>Base Entity</h1>
+                {entity ? <small><b>Entity type: </b>{entity.entity_type}</small> : null}
                 { entity ? <BaseEntityManager setStatus={props.setStatus} edit={true} id={id} entityType={entity.entity_type} private={Boolean(entity.flag)} position={entity.position} parent={entity.parent} next={entity.next}  /> : null}
             </div>
             <div>

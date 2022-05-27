@@ -112,6 +112,39 @@ function NewSource(props) {
     )
 }
 
+function EditSource(props) {
+    const [showModal, setShowModal] = useState(false)
+    const [path, setPath] = useState(props.path)
+    const [modalText, setModalText] = useState(props.path)
+
+    function savePath() {
+        setPath(modalText)
+        client.req(`/content/source/${props.id}`, { path: modalText }, { method: "PATCH" })
+        .then(() => {
+            window.location.reload()
+        })
+        .catch((e) => {
+            props.setStatus("Something went wrong. (check logs)", "error", 5)
+            console.error(e)
+        })
+    }
+
+    return (
+        <div>
+        <a className="btn-settings" onClick={() => setShowModal(true)} href="#asd">{path}</a>
+        { showModal ?
+            <Modal onDismiss={() => { setShowModal(false) }} title="Edit source">
+                <div className="row">
+                    <p>Path</p>
+                    <input type="text" onChange={(ev) => { setModalText(ev.target.value) }} value={modalText}></input>
+                </div>
+                <button onClick={savePath} className="btn btn-success full-width">Save</button>
+            </Modal> : null
+        }
+        </div>
+    )
+}
+
 // onSubmit, edit
 export default function SourcesManager(props) {
     let [sources, setSources] = useState(props.sources)
@@ -159,7 +192,7 @@ export default function SourcesManager(props) {
 
         return (
             <div className="source row">
-                <p className="btn-settings">{props.source.path}</p>
+                <EditSource setStatus={props.setStatus} id={props.source.id} path={props.source.path} />
                 <a onClick={() => deleteSource(props.source.id)} href="#bin"><Icon type="bin" /></a>
             </div>
         )
