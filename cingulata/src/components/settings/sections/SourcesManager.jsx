@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import { client } from "../../../App"
 import "./sources.css"
 import Icon from "../../icon";
+import Modal from "../../modal/modal";
 
 // List that allows drag and drop re-ordering. 
 function ReorderList(props) {
@@ -81,28 +82,59 @@ function ReorderList(props) {
     pub position: Option<u16>
 */
 
+function NewSource(props) {
+    const [showModal, setShowModal] = useState(false)
+    const [path, setPath] = useState("/media/")
+
+    const create = () => {
+        //props.setStatus
+        client.req("/content/source", { path, parent: props.parent }, { method: "POST" })
+        .then(() => {
+            window.location.reload()
+        })
+        .catch(e => {
+            setShowModal(false)
+            props.setStatus("Something went wrong (check logs)", "error", 5)
+            console.error(e)
+        })
+    }
+
+    return (
+        <div>
+            <div className="row"><p>New source</p> <button onClick={() => setShowModal(true)} className="btn-settings">Create</button></div>
+            { showModal ?
+                <Modal title="New Source" onDismiss={() => setShowModal(false)}>
+                    <div className="row"><p>Path</p> <input onChange={(e) => setPath(e.target.value)} value={path} type="text"></input></div>
+                    <button onClick={create} className="btn btn-success full-width">Create</button>
+                </Modal> : null
+            }
+        </div>
+    )
+}
+
 // onSubmit, edit
 export default function SourcesManager(props) {
-    let [sources, setSources] = useState([ { parent:"a", path:"/media/test/test/test/assdasd.mpg", position: 1, id:"a" }, { parent:"a", path:"b", position: 2, id:"b" }, { parent:"a", path:"c", position: 30, id:"c" }, { parent:"a", path:"d", position: 41, id:"d" } ])
+    let [sources, setSources] = useState(props.sources)
     const tSources = sources.sort((a,b) => a.position - b.position)
 
     const positionChanged = (source, pos) => {
-        // do api shit firstly
-        // endpoint is /content/source/<id> btw
-        // takes struct shown above but everything is an option so just send position as the body 
-
+        pos = Math.max(pos - 1, 0)
         source.position = pos
-        let tempList = [source]
-        // handle re-order of elements
-        for(let i = 0; i < tSources.length; i++) {
-            let elem = tSources[i]
-            if(elem.id != source.id) {
-                elem.position = i
-                tempList.push(elem)
-            }
-        }
+        let tempList = tSources.filter(v => v.id !== source.id)
 
-        tempList = tempList.sort((a,b) => a.position - b.position)
+        // this line of code is... yea
+        // it works at least lol 
+        let test = [ ...tempList.splice(0,pos).reverse().map((i,j) => { i.position = pos - j - 1; return i }), source, ...tempList.map((i, j) => {i.position = pos + j + 1; return i}) ]
+
+        tempList = test.sort((a,b) => a.position - b.position)
+
+        // does one call for every source no matter what changes are made if any. This is extremely dumb so it matches my intelect
+        for(let _src of tempList) {
+            client.req(`/content/source/${_src.id}`, { position: _src.position }, { method: "PATCH" })
+            .catch((e) => {
+                console.error(`failed to change position of source ${_src.id}`, e)
+            })
+        }
 
         // update state 
         setSources(tempList)
@@ -116,7 +148,7 @@ export default function SourcesManager(props) {
             client.req(`/content/${id}/source`, {}, { method: "DELETE" })
             .then(res => {
                 props.setStatus("Deleted source.", "success", 3)
-                let temp = tSources.filter(a => a.id != id)
+                let temp = tSources.filter(a => a.id !== id)
                 setSources(temp)
             })
             .catch(e => {
@@ -137,6 +169,7 @@ export default function SourcesManager(props) {
 
     return(
         <div className="baseEntity">
+            <NewSource parent={props.parent} setStatus={props.setStatus} />
             <ReorderList>
                 {tSources.map(s => <SourceElement setStatus={props.setStatus} key={s.id} positionchanged={(e) => positionChanged(s, e)} source={s} />)}
             </ReorderList>
