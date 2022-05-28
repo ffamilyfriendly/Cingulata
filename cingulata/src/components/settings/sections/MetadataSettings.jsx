@@ -1,6 +1,4 @@
 import React, { useState } from "react"
-import SearchBar from "../../search/SearchBar";
-import Toggle from "../Toggle";
 import { client } from "../../../App"
 
 /**

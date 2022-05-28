@@ -28,9 +28,19 @@ export default function Edit(props) {
         })
     }
 
+    if(wentWrong) {
+        return (
+            <div>
+                <p>Something went wrong. It's possible this entity is deleted or you do not have permissions enough to edit it.</p>
+            </div>
+        )
+    }
+
     let metadata;
     if(!entity && !wentWrong) getContent()
     else metadata = entity.metadata
+
+    const showSources = entity && !["Series", "Category"].includes(entity.entity_type)
 
     return(
         <div>
@@ -49,8 +59,8 @@ export default function Edit(props) {
                 { entity ? <MetaDataManager parent={entity.id} thumbnail={metadata?.thumbnail} banner={metadata?.banner} description={metadata?.description} name={metadata?.name} rating={Number(metadata?.rating)} age_rating={metadata?.age_rating} language={metadata?.language} year={Number(metadata?.year)} setStatus={props.setStatus} edit={(metadata || !metadataMessage )} onSubmit={() => setMetadataMessage(false)} /> : null}
             </div>
             <div>
-                <h1>Sources</h1>
-                {entity ? <SourcesManager setStatus={props.setStatus} parent={entity.id} sources={entity?.sources} /> : null }
+                {showSources ? <h1>Sources</h1> : null}
+                {showSources ? <SourcesManager setStatus={props.setStatus} parent={entity.id} sources={entity?.sources} /> : null }
             </div>
             <div className="spacer"/>
         </div>

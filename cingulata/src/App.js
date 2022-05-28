@@ -65,7 +65,7 @@ export default function App() {
                 <Routes>
                     <Route path="/login" element={<Login setStatus={statusBar} />} />
                     <Route path="/register" element={<Register setStatus={statusBar} />} />
-                    { false ? <Route path="/b/:id" element={<Browse setStatus={statusBar} />} /> : null}
+                    <Route path="/b/:id" element={<Browse setStatus={statusBar} />} />
                     <Route path="/edit/:id" element={<Edit setStatus={statusBar} />} />
                     <Route path="/settings" element={<Settings setStatus={statusBar} />} />
                     <Route path="/" element={ <InfoScreen /> } />

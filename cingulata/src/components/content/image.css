@@ -16,6 +16,30 @@
     height: 10rem;
 }
 
+.skeleton {
+    height: 100%;
+    width: 10rem;
+    background: linear-gradient(90deg, rgb(41 41 41) 0%, rgb(80 80 80) 7%, rgb(53 53 53) 13%, rgb(33 33 33) 25%);
+    background-size: 900%;
+    background-position: 100% 0%;
+    animation: skeletonAnimation 1s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+    color: transparent;
+}
+
+@keyframes skeletonAnimation {
+    0% {
+        background-position: 100% 0%;
+    }
+    99.99% {
+        background-position: -30% 0%;
+    }
+    100% {
+        background-position: 100% 0%;
+    }
+}
+
 img {
     width: auto;
     height: 10rem;

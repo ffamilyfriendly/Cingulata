@@ -4,6 +4,7 @@ import SearchBar from "../../search/SearchBar";
 import Toggle from "../Toggle";
 import { client } from "../../../App"
 import HoldButton from "../HoldButton";
+import { Link, Navigate } from "react-router-dom"
 
 export function BaseEntityManager(props) {
     const [entityType, setEntityType] = useState(props.entityType||"NO")
@@ -14,6 +15,8 @@ export function BaseEntityManager(props) {
     
     const [search, setSearch] = useState(false)
     const [searchN, setNextSearch] = useState(false)
+
+    const [ redirect, setRedirect ] = useState()
 
     const submitEntity = () => {
         let errs = ""
@@ -32,7 +35,7 @@ export function BaseEntityManager(props) {
         client.req(url, body, { method: props.edit ? "PATCH" : "POST" })
         .then((e) => {
             if(!props.edit && e.content) {
-                window.location = `/edit/${e.content}`
+                setRedirect(`/edit/${e.content}`)
             } else props.setStatus("saved entity data", "success", 5)
         })
         .catch(e => {
@@ -44,6 +47,7 @@ export function BaseEntityManager(props) {
     const deleteEntity = () => {
         client.req(`/content/${props.id}/entity`, {}, { method: "DELETE" })
         .then(() => {
+            setRedirect("/settings")
             props.setStatus("Entity deleted", "success", 5)
         })
         .catch((e) => {
@@ -54,6 +58,7 @@ export function BaseEntityManager(props) {
 
     return(
         <div className="baseEntity">
+            { redirect ? <Navigate replace="true" to={redirect}/> : null }
             { !props.edit ? <div className="row">
                 <p>Entity type</p>
                 <select onChange={(ev) => {setEntityType(ev.target.value)}} value={entityType}>
@@ -135,7 +140,7 @@ function EntitiesList(props) {
     const deleteEntity = (id) => {
         client.req(`/content/${id}/entity`, {}, { method: "DELETE" })
         .then(() => {
-            setEntities( entities.filter(e => e.id != id) )
+            setEntities( entities.filter(e => e.id !== id) )
         })
         .catch((e) => {
             props.setStatus("Could not delete entity. (check logs)", "error", 5)
@@ -155,9 +160,9 @@ function EntitiesList(props) {
                         </div>
                         {
                             deleteMode ?
-                            <a onClick={() => deleteEntity(e.id)} href="#" className="btn-settings">Delete</a>
+                            <a onClick={() => deleteEntity(e.id)} href="#delete" className="btn-settings">Delete</a>
                             :
-                            <a href={`/edit/${e.id}`} className="btn-settings">Manage</a>
+                            <Link className="btn-settings" to={`/edit/${e.id}`}>Manage</Link>
                         }
                     </div>
                 )
