@@ -19,7 +19,7 @@ This is the client for [Okapi](https://github.com/ffamilyfriendly/okapi)
   - [X] Delete content
   - [ ] Metadata fetcher (needs to be created on backend as well)
 - [ ] Content
-  - [ ] Browsing of content
+  - [X] Browsing of content
   - [X] Searching of content
   - [ ] Playing content
     - [ ] Video controlls
@@ -28,3 +28,4 @@ This is the client for [Okapi](https://github.com/ffamilyfriendly/okapi)
 - [ ] Last watched
   - [ ] Audio (should be ez)
   - [ ] Video (should be ez)
+- [ ] Optimise ui for non mobile

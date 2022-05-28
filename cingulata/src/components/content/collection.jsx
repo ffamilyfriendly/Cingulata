@@ -1,6 +1,7 @@
 import React, { useState } from "react"
 import Image from "./image"
 import "./collection.css"
+import { client } from "../../App"
 
 // 300 - 48
 
@@ -32,6 +33,29 @@ function ExtendedView(props) {
         if(ev.target.classList.contains("extended-view") && props.onDismiss) props.onDismiss()
     }
 
+    const [ next, setNext ] = useState()
+
+    const getNext = () => {
+        client.req(`/content/${item.next}`)
+        .then((r) => {
+            console.log(r)
+            setNext(r.content)
+        })
+    }
+
+    if(!next && item.next) getNext()
+
+    const handleNextClick = () => {
+        switch(next.entity_type) {
+            case "Category":
+                window.location.href = `/b/${next.id}`
+            break;
+            default :
+                window.location.href = `/consume/${next.id}`
+            break;
+        }
+    }
+
     return (
         <div onClick={handleClick} className="extended-view">
             <div className="extended-body">
@@ -50,6 +74,13 @@ function ExtendedView(props) {
                     <h1>{item.entity_type} Overview</h1>
                     <h3>Description</h3>
                     <p>{item.metadata.description}</p>
+                    {
+                        next ?
+                        <div>
+                            <h3>Next content</h3>
+                            <Collection onClick={handleNextClick} data={next} />
+                        </div> : null
+                    }
                 </div>
             </div>
         </div>

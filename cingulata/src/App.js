@@ -14,6 +14,7 @@ import Register from "./pages/register"
 import Browse from "./pages/browse"
 import Settings from "./pages/settings"
 import Edit from "./pages/edit"
+import SearchPage from "./pages/search"
 
 const client = new OkapiClient(`${window.location.protocol}//${window.location.hostname}:3000`)
 
@@ -65,6 +66,7 @@ export default function App() {
                 <Routes>
                     <Route path="/login" element={<Login setStatus={statusBar} />} />
                     <Route path="/register" element={<Register setStatus={statusBar} />} />
+                    <Route path="/search" element={ <SearchPage setStatus={statusBar} /> } />
                     <Route path="/b/:id" element={<Browse setStatus={statusBar} />} />
                     <Route path="/edit/:id" element={<Edit setStatus={statusBar} />} />
                     <Route path="/settings" element={<Settings setStatus={statusBar} />} />

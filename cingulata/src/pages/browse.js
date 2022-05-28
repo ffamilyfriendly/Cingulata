@@ -2,17 +2,20 @@
 
 import React, { useState } from "react";
 import { client } from "../App";
-import { useParams } from "react-router-dom";
+import { useParams, Navigate } from "react-router-dom";
 import Collection from "../components/content/collection";
-
-function withParams(Component) {
-    return props => <Component {...props} params={useParams()} />;
-}
+import "./browse.css"
 
 export default function Browse(props) {
     const { id } = useParams()
     const [ items, setItems ] = useState()
     const [ failed, setFailed ] = useState(false)
+    const [ redirect, setRedirect ] = useState()
+
+    if(items && items[0].parent !== id) {
+        setItems(null)
+        setRedirect(null)
+    }
 
     const fetchItems = () => {
         client.req(`/content/${id}/children`)
@@ -26,12 +29,21 @@ export default function Browse(props) {
     }
 
     if(!failed && !items) fetchItems()
-    console.log(items)
+
+    const handleOnClick = (i) => {
+        console.log(i)
+        switch(i.entity_type) {
+            case "Category":
+                setRedirect(`/b/${i.id}`)
+            break;
+        }
+    }
 
     return (
         <div className="browse">
+            { redirect ? <Navigate replace="true" to={redirect} /> : null }
             { items ?
-                items.map(i => <Collection key={i.id} allowExtended={true} data={i} />)
+                items.map(i => <Collection onClick={() => handleOnClick(i)} key={i.id} allowExtended={true} data={i} />)
                 :
                 <p>loading</p>
             }
