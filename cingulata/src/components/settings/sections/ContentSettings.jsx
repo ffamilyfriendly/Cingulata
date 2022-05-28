@@ -45,9 +45,6 @@ export function BaseEntityManager(props) {
         client.req(`/content/${props.id}/entity`, {}, { method: "DELETE" })
         .then(() => {
             props.setStatus("Entity deleted", "success", 5)
-            setTimeout(() => {
-                window.location = "/settings"
-            }, 5000)
         })
         .catch((e) => {
             props.setStatus("Something went wrong. (check logs)", "error", 5)
@@ -84,7 +81,7 @@ export function BaseEntityManager(props) {
             </div>
 
             <button onClick={submitEntity} className="btn btn-success full-width">Submit</button>
-            {props.edit ? <HoldButton delay={5} onClick={() => deleteEntity()} className="full-width btn-error">Delete</HoldButton> : null}
+            {props.edit ? <HoldButton delay={2} onClick={() => deleteEntity()} className="full-width btn-error">Delete</HoldButton> : null}
         </div>
     )
 }
@@ -100,7 +97,7 @@ function NewContent(props) {
     return(
         <div className="settingsRow">
         <p>New Content</p>
-        <button onClick={openModal} className="btn-settings"> Manage </button>
+        <button onClick={openModal} className="btn-settings"> Generate </button>
             { modal ? 
                 <Modal onDismiss={() => { showModal(false) }} title="New Entity">
                     <BaseEntityManager setStatus={props.setStatus} />
@@ -112,12 +109,94 @@ function NewContent(props) {
     )
 }
 
+function EntitiesList(props) {
+    const [ entities, setEntities ] = useState()
+    const [ failed, setFailed ] = useState(false)
+    const [ deleteMode, setDeleteMode ] = useState(false)
+
+    const fetchEntities = () => {
+        client.req("/content/all/children")
+        .then(res => {
+            setEntities(res.content)
+        })
+        .catch(e => {
+            props.setStatus("Something went wrong. (check logs)", "error", 5)
+            setFailed(true)
+            console.error(e)
+        })
+    }
+
+    if(!entities && !failed) fetchEntities()
+
+    const toggleDeleteMode = () => {
+        setDeleteMode(!deleteMode)
+    }
+
+    const deleteEntity = (id) => {
+        client.req(`/content/${id}/entity`, {}, { method: "DELETE" })
+        .then(() => {
+            setEntities( entities.filter(e => e.id != id) )
+        })
+        .catch((e) => {
+            props.setStatus("Could not delete entity. (check logs)", "error", 5)
+            console.error(e)
+        })
+    }
+
+    return (
+        <div>
+            <button className={"btn full-width " + (deleteMode ? "btn-error" : "btn-success") } onClick={toggleDeleteMode}> turn {deleteMode ? "off" : "on"} delete mode </button>
+            { entities ? entities.map(e => {
+                return (
+                    <div key={e.id} className="row">
+                        <div className="entityinfo">
+                            <p>{e.metadata ? e.metadata.name : e.id}</p>
+                            <p><b>type:</b> {e.entity_type}</p>
+                        </div>
+                        {
+                            deleteMode ?
+                            <a onClick={() => deleteEntity(e.id)} href="#" className="btn-settings">Delete</a>
+                            :
+                            <a href={`/edit/${e.id}`} className="btn-settings">Manage</a>
+                        }
+                    </div>
+                )
+            }) : null }
+        </div>
+    )
+}
+
+function ManageContent(props) {
+
+    const [modal, showModal] = useState(false)
+
+    const openModal = () => {
+        showModal(true)
+    }
+
+    return (
+        <div className="settingsRow">
+            <p>Existing Content</p>
+            <button onClick={openModal} className="btn-settings"> Manage </button>
+            {
+                modal ? 
+                <Modal onDismiss={() => { showModal(false) }} title="Manage Entities">
+                    <EntitiesList setStatus={props.setStatus} />
+                </Modal>
+                :
+                null
+            }
+        </div>
+    )
+}
+
 export default function ContentSettings(props) {
     return(
         <div className="InviteGenerator">
             <h1>Content Settings</h1>
             <div className="settings">
                 <NewContent setStatus={props.setStatus} />
+                <ManageContent setStatus={props.setStatus} />
             </div>
         </div>
     )
