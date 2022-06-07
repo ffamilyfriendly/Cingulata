@@ -36,6 +36,9 @@ export default function Browse(props) {
             case "Category":
                 setRedirect(`/b/${i.id}`)
             break;
+            default:
+                setRedirect(`/consume/${i.id}`)
+            break;
         }
     }
 
