@@ -34,16 +34,36 @@ function ExtendedView(props) {
     }
 
     const [ next, setNext ] = useState()
+    const [ length, setLength ] = useState()
 
     const getNext = () => {
         client.req(`/content/${item.next}`)
         .then((r) => {
-            console.log(r)
             setNext(r.content)
         })
     }
 
+    const getLength = () => {
+        let reqs = []
+        for(let source of item.sources) {
+            reqs.push(client.req(`/content/source/${source.id}/info`))
+        }
+        Promise.all(reqs).then(values => {
+            let len = 0
+            for(let res of values) {
+                len += res?.content?.playback_length
+            }
+            let hours = len / 60 / 60
+            setLength(`${Math.floor(hours)}h ${Math.floor((hours % 1) * 100)}m`)
+        })
+        .catch(e => {
+            // handling errors is for losers
+            console.log(e)
+        })
+    }
+
     if(!next && item.next) getNext()
+    if(!length && item.sources.length > 0) getLength()
 
     const handleNextClick = () => {
         switch(next.entity_type) {
@@ -63,8 +83,10 @@ function ExtendedView(props) {
                     <div className="center-thumbnail">
                         <Image src={item.metadata.thumbnail} alt={item.metadata.name} />
                         <div className="title">
-                            <h1 className={ "entity-title" + (item.metadata.name.length > 7 ? " long" : "") }>{item.metadata.name} <span className="gray">({item.metadata.year})</span></h1>
-                            <p>Released {item.metadata.year} - {item.metadata.language}</p>
+                            <div className="title-contrast">
+                                <h1 className={ "entity-title" + (item.metadata.name.length > 7 ? " long" : "") }>{item.metadata.name} <span className="gray">({item.metadata.year})</span></h1>
+                                <p>{ length ? `${length} -` : null } {item.metadata.language}</p>
+                            </div>
                             <UserRating rating={item.metadata.rating} />
                         </div>
                     </div>
