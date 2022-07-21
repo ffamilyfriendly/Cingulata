@@ -23,7 +23,7 @@ This is the client for [Okapi](https://github.com/ffamilyfriendly/okapi)
   - [X] Searching of content
   - [ ] Playing content
     - [ ] Video controlls
-    - [ ] Audio controlls
+    - [X] Audio controlls
   - [ ] Downloading content
 - [ ] Last watched
   - [ ] Audio (should be ez)
