@@ -25,9 +25,9 @@
 .audiobook-control-group {
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     gap: 3rem;
     width: 100%;
-    height: 100%;
 }
 
 .audiobook-control-row {
@@ -49,6 +49,10 @@
     padding: 1rem;
     display: flex;
     justify-content: space-between;
+}
+
+.audiobook-source-name {
+    color: gray;
 }
 
 .audiobook-btn {
@@ -109,6 +113,11 @@
     width: 100%;
     display: flex;
     justify-content: space-between;
+}
+
+.audiobook-controls-bottom-row button {
+    background-color: transparent;
+    border: none;
 }
 
 .skip svg {

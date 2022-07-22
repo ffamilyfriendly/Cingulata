@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Navigate } from "react-router-dom";
+import Modal from "../components/modal/modal";
 import { client } from "../App";
 import Icon from "../components/icon";
 import "./consume.css"
@@ -65,7 +66,49 @@ const findActiveSource = (sources, seconds) => {
     return { source: fsource, secondsIn: xseconds }
 }
 
+const findStartOfSource = (sources, fsource) => {
+    let tally = 0
+
+    for(let source of sources) {
+        if(source.id != fsource.id) tally += source.duration
+        else break;
+        console.log(tally, source.id, fsource.id)
+    }
+    return tally
+}
+
 const audio = new Audio()
+
+function AudioSettings(props) {
+    const { skipIncrament, setSkipIncrament, playbackSpeed, setPlaybackSpeed, setSettingsModal } = props
+
+    const setSkip = (v) => {
+        const value = Number(v.target.value)
+        if(isNaN(value) || value < 0) return
+        localStorage.setItem("settings_audio_skipIncrament", value)
+        setSkipIncrament(value)
+    }
+
+    const setSpeed = (v) => {
+        const value = Number(v.target.value)
+        if(isNaN(value) || value < 0 || value > 2) return
+        localStorage.setItem("settings_audio_playbackSpeed", value)
+        setPlaybackSpeed(value)
+    }
+
+    return (
+        <Modal onDismiss={() => { setSettingsModal(false) }} title="Audio Settings">
+            <div className="row">
+                <p>Skip Incraments</p>
+                <input type="number" value={skipIncrament} onChange={setSkip} />
+            </div>
+            <div className="row">
+                <p>Playback Speed</p>
+                <input type="number" value={playbackSpeed} onChange={setSpeed} />
+            </div>
+        </Modal>
+    )
+}
 
 function AudioPlayer(props) {
     const { entity } = props
@@ -74,6 +117,12 @@ function AudioPlayer(props) {
     let [playback, setPlayback] = useState(0)
     let [playing, setPlaying] = useState(false)
     let [source, setSource] = useState(null)
+
+    let [skipIncrament, setSkipIncrament] = useState(Number(localStorage.getItem("settings_audio_skipIncrament")||"15"))
+    let [playbackSpeed, setPlaybackSpeed] = useState(Number(localStorage.getItem("settings_audio_playbackSpeed")||"1"))
+
+    let [sourcesModal, setSourcesModal] = useState(false)
+    let [settingsModal, setSettingsModal] = useState(false)
 
     document.title = source ? `${cleanUpFileName(source.path)} » ${entity?.metadata?.name}` : `${entity?.metadata?.name} » Armadillo`
 
@@ -129,52 +178,57 @@ function AudioPlayer(props) {
         return () => clearInterval(interval)
     })
 
-
+    audio.playbackRate = playbackSpeed
 
     return (
         <div className="audioplayer">
-
-            <img className="audiobook-img" src={entity.metadata.thumbnail} />
-            <div className="audiobook-control-group">
-
-                <div className="audiobook-controls-top-row">
-                    <p>t</p>
-                    <p>p</p>
+            { sourcesModal ? <Modal title="Sources" onDismiss={() => { setSourcesModal(false) }} > { entity ? entity.sources.map(s => { return <div onClick={ () => { setPlayback(findStartOfSource(entity.sources, s)); setSourcesModal(false) } } key={s.id} className="row">{cleanUpFileName(s.path)}</div> }) : null } </Modal> : null }
+            { settingsModal ? <AudioSettings setSettingsModal={setSettingsModal} skipIncrament={skipIncrament} setSkipIncrament={setSkipIncrament} playbackSpeed={playbackSpeed} setPlaybackSpeed={setPlaybackSpeed} /> : null }
+            <div>
+                <div className="audiobook-controls-bottom-row">
+                        <button onClick={() => { alert("not implemented") }}> 
+                            <Icon type="download2" />
+                        </button>
+                        <button onClick={() => { setSourcesModal(true) }}>
+                            <Icon type="list" />
+                        </button>
+                        <button onClick={() => { setSettingsModal(true) }}>
+                            <Icon type="settings2" />
+                        </button>
                 </div>
 
-                <div>
-                    <div className="audiobook-slider">
-                        <input type="range" min="0" onChange={(ev) => {setPlayback(Number(ev.target.value))}} value={playback} max={entity.duration} />
-                        <div className="audiobook-times">
-                            <p>{formatTime(playback)}</p>
-                            <p>{formatTime(entity.duration)}</p>
+                <img className="audiobook-img" src={entity.metadata.thumbnail} />
+                <div className="audiobook-control-group">
+
+                    <div>
+                        <div className="audiobook-slider">
+                            <p className="audiobook-source-name">{ source ? cleanUpFileName(source.path) : "not playing"}</p>
+                            <input type="range" min="0" onChange={(ev) => {setPlayback(Number(ev.target.value))}} value={playback} max={entity.duration} />
+                            <div className="audiobook-times">
+                                <p>{formatTime(playback)}</p>
+                                <p>{formatTime(entity.duration)}</p>
+                            </div>
+                        </div>
+
+                        <div className="audiobook-control-row">
+                            <button onClick={() => bumpPlayback(skipIncrament * -1)} className="audiobook-btn skip">
+                                <Icon type="reverse"></Icon>
+                                <p>{skipIncrament}</p>
+                            </button>
+                            <button onClick={togglePlay} className="audiobook-btn audiobook-play-button">
+                                { playing ? <Icon type="pause"/> : <Icon type="play"/> }
+                            </button>
+                            <button onClick={() => bumpPlayback(skipIncrament)} className="audiobook-btn skip">
+                                <Icon type="forwards"></Icon>
+                                <p>{skipIncrament}</p>
+                            </button>
                         </div>
                     </div>
 
-                    <div className="audiobook-control-row">
-                        <button onClick={() => bumpPlayback(-15)} className="audiobook-btn skip">
-                            <Icon type="reverse"></Icon>
-                            <p>15</p>
-                        </button>
-                        <button onClick={togglePlay} className="audiobook-btn audiobook-play-button">
-                            { playing ? <Icon type="pause"/> : <Icon type="play"/> }
-                        </button>
-                        <button onClick={() => bumpPlayback(15)} className="audiobook-btn skip">
-                            <Icon type="forwards"></Icon>
-                            <p>15</p>
-                        </button>
-                    </div>
-                </div>
 
-                <div className="audiobook-controls-bottom-row">
-                    <p>t</p>
-                    <p>p</p>
-                    <p>x</p>
-                    <p>d</p>
-                </div>
 
+                </div>
             </div>
-
         </div>
     )
 }

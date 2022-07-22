@@ -47,7 +47,10 @@ window.settings = {
     },
     set: (val, v) => {
         localStorage.setItem(`settings_${val}`, v)
-    } 
+    },
+    get: (key) => {
+        return localStorage.getItem(`settings_${key}`)
+    }
 }
 
 function NotLoggedIn() {
