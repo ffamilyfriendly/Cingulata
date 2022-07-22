@@ -190,7 +190,7 @@ export class OkapiClient {
 
 
     //content
-    getChildren(id) {
+    getChildren(id, includeDuration) {
         return new Promise((resolve, reject) => {
             this.req(`/content/${id}/children`)
             .then(r => {
@@ -202,4 +202,34 @@ export class OkapiClient {
             .catch(err => reject(err))
         })
     }
+
+    postLastWatched(id, timestamp) {
+        return new Promise((resolve, reject) => {
+            if(!this.loggedIn || this._internal.hasLostConn) {
+                localStorage.setItem(`lw_${id}`, timestamp)
+                resolve(timestamp)
+            } else {
+                this.req(`/content/lastwatched/${id}`, { timestamp }, { method: "PATCH" })
+                .then(() => {
+                    resolve(timestamp)
+                })
+                .catch(e => reject(e))
+            }
+        })
+    }
+
+    getLastWatched(id) {
+        return new Promise((resolve, reject) => {
+            if(!this.loggedIn || this._internal.hasLostConn) {
+                resolve(Number(localStorage.getItem(`lw_${id}`)|"0"))
+            } else {
+                this.req(`/content/${id}/lastwatched`)
+                .then((val) => {
+                    resolve(val.content.timestamp)
+                })
+                .catch((err) => reject(err))
+            }
+        })
+    }
+
 }

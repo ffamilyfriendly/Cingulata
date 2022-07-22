@@ -26,6 +26,6 @@ This is the client for [Okapi](https://github.com/ffamilyfriendly/okapi)
     - [X] Audio controlls
   - [ ] Downloading content
 - [ ] Last watched
-  - [ ] Audio (should be ez)
+  - [X] Audio (should be ez)
   - [ ] Video (should be ez)
 - [ ] Optimise ui for non mobile

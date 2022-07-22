@@ -85,6 +85,7 @@ function ReorderList(props) {
 function NewSource(props) {
     const [showModal, setShowModal] = useState(false)
     const [path, setPath] = useState("/media/")
+    const [dir, setDir] = useState("/media/")
 
     const create = () => {
         //props.setStatus
@@ -99,17 +100,43 @@ function NewSource(props) {
         })
     }
 
+    const createFromDir = () => {
+        client.req(`/content/files?dir=${dir}`)
+        .then(r => {
+            let promises = []
+            for(let i = 0; i < r.content.length; i++) {
+                let source = r.content[i]
+                promises.push(client.req("/content/source", { path: source, position: i, parent: props.parent }, { method: "POST" }))
+            }
+
+            Promise.allSettled(promises)
+            .then(() => { window.location.reload() })
+        })
+        .catch(err => console.log("could not create from dir", err))
+    }
+
     return (
         <div>
             <div className="row"><p>New source</p> <button onClick={() => setShowModal(true)} className="btn-settings">Create</button></div>
             { showModal ?
                 <Modal title="New Source" onDismiss={() => setShowModal(false)}>
-                    <div className="row"><p>Path</p> <input onChange={(e) => setPath(e.target.value)} value={path} type="text"></input></div>
-                    <button onClick={create} className="btn btn-success full-width">Create</button>
+                    <h2>Single</h2>
+                        <div className="row"><p>Path</p> <input onChange={(e) => setPath(e.target.value)} value={path} type="text"></input></div>
+                        <button onClick={create} className="btn btn-success full-width">Create</button>
+                    <h2>Multiple</h2>
+                        <div className="row"><p>Dir</p> <input onChange={(e) => setDir(e.target.value)} value={dir} type="text"></input></div>
+                        <button onClick={createFromDir} className="btn btn-success full-width">{"Add all in " + dir}</button>
                 </Modal> : null
             }
         </div>
     )
+}
+
+const cleanUpFileName = (name) => {
+    if(!name) return "lol"
+    const chunks = name.split("/")
+    const fileName = chunks[chunks.length - 1]
+    return fileName
 }
 
 function EditSource(props) {
@@ -131,7 +158,7 @@ function EditSource(props) {
 
     return (
         <div>
-        <a className="btn-settings" onClick={() => setShowModal(true)} href="#asd">{path}</a>
+        <a className="btn-settings" onClick={() => setShowModal(true)} href="#asd">{cleanUpFileName(path)}</a>
         { showModal ?
             <Modal onDismiss={() => { setShowModal(false) }} title="Edit source">
                 <div className="row">

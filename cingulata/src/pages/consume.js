@@ -72,12 +72,12 @@ const findStartOfSource = (sources, fsource) => {
     for(let source of sources) {
         if(source.id != fsource.id) tally += source.duration
         else break;
-        console.log(tally, source.id, fsource.id)
     }
     return tally
 }
 
 const audio = new Audio()
+let reqWatch = 0
 
 function AudioSettings(props) {
     const { skipIncrament, setSkipIncrament, playbackSpeed, setPlaybackSpeed, setSettingsModal } = props
@@ -114,7 +114,7 @@ function AudioPlayer(props) {
     const { entity } = props
 
     // states
-    let [playback, setPlayback] = useState(0)
+    let [playback, setPlayback] = useState(undefined)
     let [playing, setPlaying] = useState(false)
     let [source, setSource] = useState(null)
 
@@ -168,14 +168,30 @@ function AudioPlayer(props) {
     // effect to keep the track-bar on screen in focus
     useEffect(() => {
         let interval = setInterval(() => {
+            reqWatch += 1
             if(!audio.paused && source) {
                 setPlayback(source.tally + audio.currentTime)
+                if((reqWatch % 5)  === 0) client.postLastWatched(entity.id, source.tally + audio.currentTime)
             }
         }, 1000)
 
         audio.onended = () => _play()
 
         return () => clearInterval(interval)
+    })
+
+    useEffect(() => {
+
+        if(typeof playback == "undefined") {
+            client.getLastWatched(entity.id)
+            .then(lw => {
+                console.log(lw)
+                if(lw) setPlayback(lw)
+            })
+            .catch(err => {
+                setPlayback(0)
+            })
+        }
     })
 
     audio.playbackRate = playbackSpeed
