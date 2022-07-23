@@ -1,7 +1,8 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import Image from "./image"
 import "./collection.css"
 import { client } from "../../App"
+import Icon from "../icon"
 
 // 300 - 48
 
@@ -109,6 +110,17 @@ function ExtendedView(props) {
     )
 }
 
+const getAgeRatingLabel = (age) => {
+    age = Number(age)
+    let label = "G"
+
+    if(age >= 13) label = "PG-13"
+    if(age >= 17) label = "R"
+    if(age >= 18) label = "18A"
+    
+    return label
+}
+
 export default function Collection(props) {
     const item = props.data
     let preventClickEvent = false
@@ -137,14 +149,51 @@ export default function Collection(props) {
         if(extended) preventClickEvent = true
     }
 
+    console.log(item)
+
+    const [ duration, setDuration ] = useState(0)
+
+    useEffect(() => {
+        if(item.entity_type == "Category") {
+            client.req(`/content/${item.id}/children`)
+            .then(r => {
+                setDuration(`${r.content.length} children`) 
+            })
+            return
+        }
+        let reqs = []
+        for(let source of item.sources) {
+            reqs.push(client.req(`/content/source/${source.id}/info`))
+        }
+        Promise.all(reqs).then(values => {
+            let len = 0
+            for(let res of values) {
+                len += res?.content?.playback_length
+            }
+            let hours = len / 60 / 60
+            setDuration(`${Math.floor(hours)}h ${Math.floor((hours % 1) * 100)}m`)
+        })
+        .catch(e => {
+            // handling errors is for losers
+            console.log(e)
+        })
+    })
+
     return (
         <div onMouseDown={handleMouseDown} onTouchStart={handleMouseDown} onMouseUp={handleMouseUp} onTouchEnd={handleMouseUp} onClick={handleClick} className="collection noselect">
             { extended ? <ExtendedView onDismiss={() => setExtended(false)} data={props.data} /> : null }
             <Image src={item.metadata.thumbnail} alt={item.metadata.name} />
             <div className="meta">
                 <h2>{item.metadata.name}</h2>
-                <p>{item.metadata.description}</p>
+                <div className="meta-row"> <span className="meta-agerating">{getAgeRatingLabel(item.metadata.age_rating)}</span> <span>{item.metadata.year}</span> • {duration} </div>
             </div>
+
+            { item.entity_type == "Category" ? null : 
+                <div className="collection-rating">
+                    <Icon type="star" />
+                    {item.metadata.rating}
+                </div>
+            }
         </div>
     )
 }

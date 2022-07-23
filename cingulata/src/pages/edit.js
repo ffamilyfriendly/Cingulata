@@ -56,7 +56,7 @@ export default function Edit(props) {
                         <p>This entity has no metadata. Metadata will be created when you click submit below</p>
                     </div>      
                 }
-                { entity ? <MetaDataManager parent={entity.id} thumbnail={metadata?.thumbnail} banner={metadata?.banner} description={metadata?.description} name={metadata?.name} rating={Number(metadata?.rating)} age_rating={metadata?.age_rating} language={metadata?.language} year={Number(metadata?.year)} setStatus={props.setStatus} edit={(metadata || !metadataMessage )} onSubmit={() => setMetadataMessage(false)} /> : null}
+                { entity ? <MetaDataManager parent={entity.id} type={entity.entity_type} thumbnail={metadata?.thumbnail} banner={metadata?.banner} description={metadata?.description} name={metadata?.name} rating={Number(metadata?.rating)} age_rating={metadata?.age_rating} language={metadata?.language} year={Number(metadata?.year)} setStatus={props.setStatus} edit={(metadata || !metadataMessage )} onSubmit={() => setMetadataMessage(false)} /> : null}
             </div>
             <div>
                 {showSources ? <h1>Sources</h1> : null}
