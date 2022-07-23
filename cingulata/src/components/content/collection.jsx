@@ -113,10 +113,8 @@ function ExtendedView(props) {
 const getAgeRatingLabel = (age) => {
     age = Number(age)
     let label = "G"
-
     if(age >= 13) label = "PG-13"
     if(age >= 17) label = "R"
-    if(age >= 18) label = "18A"
     
     return label
 }
@@ -161,6 +159,7 @@ export default function Collection(props) {
             })
             return
         }
+        if(!item.sources) return
         let reqs = []
         for(let source of item.sources) {
             reqs.push(client.req(`/content/source/${source.id}/info`))

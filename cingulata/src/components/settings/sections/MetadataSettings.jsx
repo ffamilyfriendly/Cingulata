@@ -61,7 +61,7 @@ function MetaDataImport(props) {
     const doSearch = (v) => {
         setQuery(v.target.value)
 
-        if(!query || query.length < 3) return
+        if(!query || query.length < 2) return
 
         client.req(`/metadata/${props.type.toLowerCase()}?query=${query}`)
         .then(res => {
@@ -72,7 +72,8 @@ function MetaDataImport(props) {
                     metadata: {
                         thumbnail: r.thumbnail,
                         name: r.name,
-                        description: r.description
+                        description: r.description,
+                        year: r.year
                     }
                 }
 
