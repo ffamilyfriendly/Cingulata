@@ -12,6 +12,7 @@
 }
 
 .main {
+    border-radius: 0.5rem;
     min-width: 80%;
     min-height: 30vh;
     background-color: var(--surface);

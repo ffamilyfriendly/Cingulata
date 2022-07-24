@@ -43,6 +43,9 @@
 .extended-view {
     width: 100%;
     position: fixed;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
     bottom: 0;
     left: 0;
     height: 100%;
@@ -54,10 +57,10 @@
     overflow: hidden;
     background-color: var(--surface);
     width: 100%;
+    max-width: 830px;
     height: 70vh;
-    position: absolute;
+    position: relative;
     bottom: 0;
-    left: 0;
     border-radius: 1rem 1rem 0rem 0rem;
 
     animation-name: animateBodyIn;

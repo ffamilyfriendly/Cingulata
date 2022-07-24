@@ -213,7 +213,9 @@ function AudioPlayer(props) {
                         </button>
                 </div>
 
-                <img className="audiobook-img" alt={entity.metadata.name} src={entity.metadata.thumbnail} />
+                <div className="audiobook-thumbnail-container">
+                    <img className="audiobook-img" alt={entity.metadata.name} src={entity.metadata.thumbnail} />
+                </div>
                 <div className="audiobook-control-group">
 
                     <div>

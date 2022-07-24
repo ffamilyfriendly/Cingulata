@@ -132,3 +132,22 @@
 video {
     width: 100%;
 }
+
+@media only screen and (min-width: 830px) {
+
+    .audioplayer > div {
+        width: 100%;
+    }
+
+    .audiobook-img {
+        max-width: 35%;
+        border-radius: 0.5rem;
+        height: auto;
+    }
+
+    .audiobook-thumbnail-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+}
