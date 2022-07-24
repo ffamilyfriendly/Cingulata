@@ -128,3 +128,7 @@
     position: absolute;
     color: white;
 }
+
+video {
+    width: 100%;
+}

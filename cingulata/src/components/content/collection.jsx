@@ -59,7 +59,7 @@ function ExtendedView(props) {
         })
         .catch(e => {
             // handling errors is for losers
-            console.log(e)
+            console.error(e)
         })
     }
 
@@ -147,12 +147,10 @@ export default function Collection(props) {
         if(extended) preventClickEvent = true
     }
 
-    console.log(item)
-
     const [ duration, setDuration ] = useState(0)
 
     useEffect(() => {
-        if(item.entity_type == "Category") {
+        if(item.entity_type === "Category") {
             client.req(`/content/${item.id}/children`)
             .then(r => {
                 setDuration(`${r.content.length} children`) 
@@ -174,7 +172,7 @@ export default function Collection(props) {
         })
         .catch(e => {
             // handling errors is for losers
-            console.log(e)
+            console.error(e)
         })
     })
 
@@ -187,7 +185,7 @@ export default function Collection(props) {
                 <div className="meta-row"> <span className="meta-agerating">{getAgeRatingLabel(item.metadata.age_rating)}</span> <span>{item.metadata.year}</span> • {duration} </div>
             </div>
 
-            { item.entity_type == "Category" ? null : 
+            { item.entity_type === "Category" ? null : 
                 <div className="collection-rating">
                     <Icon type="star" />
                     {item.metadata.rating}

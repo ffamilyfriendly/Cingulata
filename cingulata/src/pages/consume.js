@@ -15,6 +15,7 @@ const getLength = (sources) => {
             let len = 0
             let srcLen = {}
             for(let res of values) {
+                if(!res.content) continue;
                 srcLen[res?.content.api_entity.id] = res?.content?.playback_length
                 len += res?.content?.playback_length
             }
@@ -70,7 +71,7 @@ const findStartOfSource = (sources, fsource) => {
     let tally = 0
 
     for(let source of sources) {
-        if(source.id != fsource.id) tally += source.duration
+        if(source.id !== fsource.id) tally += source.duration
         else break;
     }
     return tally
@@ -114,7 +115,7 @@ function AudioPlayer(props) {
     const { entity } = props
 
     // states
-    let [playback, setPlayback] = useState(undefined)
+    let [playback, setPlayback] = useState(-1)
     let [playing, setPlaying] = useState(false)
     let [source, setSource] = useState(null)
 
@@ -182,10 +183,9 @@ function AudioPlayer(props) {
 
     useEffect(() => {
 
-        if(typeof playback == "undefined") {
+        if(playback < 0) {
             client.getLastWatched(entity.id)
             .then(lw => {
-                console.log(lw)
                 if(lw) setPlayback(lw)
             })
             .catch(err => {
@@ -213,7 +213,7 @@ function AudioPlayer(props) {
                         </button>
                 </div>
 
-                <img className="audiobook-img" src={entity.metadata.thumbnail} />
+                <img className="audiobook-img" alt={entity.metadata.name} src={entity.metadata.thumbnail} />
                 <div className="audiobook-control-group">
 
                     <div>
@@ -249,6 +249,46 @@ function AudioPlayer(props) {
     )
 }
 
+/*
+    VideoPlayer will be a lot easier than the audio player as we do not need to deal with multiple media sources.
+    source[0] = the movie
+    source[1-forwards] = subtitles
+*/
+function VideoPlayer(props) {
+
+    useEffect(() => {
+        const p = document.getElementById("video-player")
+        let interval = setInterval(() => {
+            client.postLastWatched(props.entity.id, p.currentTime)
+            .then(() => {
+                console.log(`posted time ${p.currentTime} for ${props.entity.id}`)
+            })
+            .catch(err => {
+                console.error(`failed to post watchtime for ${props.entity.id}`, err)
+            })
+        }, 5000)
+
+        client.getLastWatched(props.entity.id)
+        .then(lw => {
+            if(lw) p.currentTime = lw
+        })
+        .catch(err => {
+            console.error("could not get last watched", err)
+        })
+
+        return () => { clearInterval(interval) }
+    })
+
+    return (
+        <div className="movie">
+            <video id="video-player" crossOrigin="anonymous" controls>
+                <source src={sourceUrl(props.entity.sources[0].id)} />
+                {props.entity.sources.slice(1).map(s => <track label={ cleanUpFileName(s.path) } kind="subtitles" src={ sourceUrl(s.id) } /> )}
+            </video>
+        </div>
+    )
+}
+
 export default function Consume(props) {
     const { id } = useParams()
 
@@ -264,7 +304,7 @@ export default function Consume(props) {
                 res.content.duration = len.len
                 for(let [key, value] of Object.entries(len.srcLen)) {
                    res.content.sources.map(e => {
-                       if(e.id == key) e.duration = value
+                       if(e.id === key) e.duration = value
                        return e
                    })
                 }
@@ -286,7 +326,9 @@ export default function Consume(props) {
         })
     }
 
-    if(!entity && !failure) getEntity()
+    useEffect(() => {
+        if(!entity && !failure) getEntity()
+    })
 
     let player = null
 
@@ -294,6 +336,12 @@ export default function Consume(props) {
         switch(entity.entity_type) {
             case "Audio":
                 player = <AudioPlayer entity={entity} />
+            break;
+            case "Movie":
+                player = <VideoPlayer entity={entity} />
+            break;
+            default:
+                player = null
             break;
         }
     }

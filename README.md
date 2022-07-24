@@ -21,8 +21,8 @@ This is the client for [Okapi](https://github.com/ffamilyfriendly/okapi)
 - [ ] Content
   - [X] Browsing of content
   - [X] Searching of content
-  - [ ] Playing content
-    - [ ] Video controlls
+  - [X] Playing content
+    - [X] Video controlls
     - [X] Audio controlls
   - [ ] Downloading content
 - [ ] Last watched
