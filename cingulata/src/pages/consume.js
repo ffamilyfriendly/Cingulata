@@ -176,7 +176,7 @@ function AudioPlayer(props) {
             }
         }, 1000)
 
-        audio.onended = () => _play()
+        audio.onended = () => { setPlayback(playback+1); _play()}
 
         return () => clearInterval(interval)
     })
