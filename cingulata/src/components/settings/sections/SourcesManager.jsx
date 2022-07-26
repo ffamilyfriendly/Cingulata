@@ -104,6 +104,8 @@ function NewSource(props) {
         client.req(`/content/files?dir=${dir}`)
         .then(r => {
             let promises = []
+            const filter = new Intl.Collator(undefined, {numeric: true, sensitivity: 'base'})
+            r.content = r.content.sort(filter.compare)
             for(let i = 0; i < r.content.length; i++) {
                 let source = r.content[i]
                 promises.push(client.req("/content/source", { path: source, position: i, parent: props.parent }, { method: "POST" }))
