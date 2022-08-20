@@ -17,7 +17,7 @@ import Edit from "./pages/edit"
 import SearchPage from "./pages/search"
 import Consume from "./pages/consume"
 
-const client = new OkapiClient(`${window.location.protocol}//${window.location.hostname}/api`)
+const client = new OkapiClient(`${window.location.protocol}//${window.location.hostname}:3000`)
 
 export { client };
 
@@ -63,7 +63,15 @@ export default function App() {
     return (
         <div>
             { status ? <StatusBar time={status?.time} type={status?.type} text={status?.text} /> : null }
+            <div id="main">
             <Router>
+                <NavBar>
+                    <Link to={ internet ? "/b/root" : "#noInternet" }> <NavBarItem disabled={!internet} type="browse" text="browse" />      </Link>
+                    <Link to={ internet ? "/search" : "#noInternet" }> <NavBarItem disabled={!internet} type="search" text="search" />      </Link>
+                    <Link to="/downloads"> <NavBarItem type="download" text="downloads" /> </Link>
+                    <Link to="/settings"> <NavBarItem type="settings" text="settings" />  </Link>
+                </NavBar>
+                <div id="content">
                 <Routes>
                     <Route path="/login" element={<Login setStatus={statusBar} />} />
                     <Route path="/register" element={<Register setStatus={statusBar} />} />
@@ -75,13 +83,9 @@ export default function App() {
                     <Route path="/" element={ <InfoScreen /> } />
                     <Route path="*" element={ <FourZeroFour /> } />
                 </Routes>
-                <NavBar>
-                    <Link to={ internet ? "/b/root" : "#noInternet" }> <NavBarItem disabled={!internet} type="browse" text="browse" />      </Link>
-                    <Link to={ internet ? "/search" : "#noInternet" }> <NavBarItem disabled={!internet} type="search" text="search" />      </Link>
-                    <Link to="/downloads"> <NavBarItem type="download" text="downloads" /> </Link>
-                    <Link to="/settings"> <NavBarItem type="settings" text="settings" />  </Link>
-                </NavBar>
+                </div>
             </Router>
+            </div>
         </div>
     )
 }

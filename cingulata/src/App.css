@@ -143,3 +143,27 @@ button:disabled {
 .spacer {
     padding: 2.5rem;
 }
+
+@media only screen and (min-width: 600px) {
+    .NavBar {
+        padding: 1rem;
+        height: 100% !important;
+        flex-direction: column;
+        top: initial !important;
+        left: initial !important;
+        width: auto !important;
+        position: initial !important;
+    }
+
+    #content {
+        position: relative;
+        width: 90%;
+    }
+
+    #main {
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        flex-grow: 1;
+    }
+}

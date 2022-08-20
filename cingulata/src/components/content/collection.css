@@ -8,10 +8,6 @@
    width: auto;
 }
 
-.image img {
-
-}
-
 .collection > .image > img {
     height: 100%;
     border-radius: 0.5rem;
