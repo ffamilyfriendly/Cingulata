@@ -31,30 +31,29 @@ const findActiveSource = (sources, seconds) => {
     let fsource = null
     let xseconds = 0
     let tally = 0
-    for(let source of sources) {
-        if(seconds < tally + source.duration) {
+
+    for (let source of sources.values()) {
+        if(seconds < tally + source.length) {
             source.tally = tally
             fsource = source
             xseconds = seconds - tally
-            break; 
+            break;
         }
-        tally += source.duration
+        tally += source.length
     }
     return { source: fsource, secondsIn: xseconds }
 }
 
 const findStartOfSource = (sources, fsource) => {
     let tally = 0
-
     for(let source of sources) {
-        if(source.id !== fsource.id) tally += source.duration
+        if(source[1].id !== fsource.id) tally += source[1].length
         else break;
     }
     return tally
 }
 
 const findNextSource = (sources, csource) => {
-    console.log(sources)
     for(let i = 0; i < sources.length; i++) {
         const source = sources[i]
         if(source.id === csource.id) return sources[i+1]
@@ -186,7 +185,6 @@ export default function AudioPlayer(props) {
         if(playback < 0) {
             client.getLastWatched(entity.id)
             .then(lw => {
-                console.log("set")
                 if(lw) setPlayback(lw)
             })
             .catch(err => {
@@ -197,9 +195,30 @@ export default function AudioPlayer(props) {
 
     audio.playbackRate = playbackSpeed
 
+    const SourcesModal = () => {
+
+        let sources = []
+
+        if(entity) {
+            entity.sources.forEach(src => {
+                sources.push(
+                    <div onClick={ () => { hotSetPlayback(findStartOfSource(entity.sources, src)); setSourcesModal(false) } } key={src.id} className="row" >
+                        <p className={ (source && src.id === source.id) ? "currentSource" : null }>  {cleanUpFileName(src.path)}  </p>
+                    </div>
+                )
+            })
+        }
+
+        return (
+            <Modal title="Sources" onDismiss={() => { setSourcesModal(false) }}>
+                { sources }
+            </Modal>
+        )
+    }
+
     return (
         <div className="audioplayer">
-            { sourcesModal ? <Modal title="Sources" onDismiss={() => { setSourcesModal(false) }} > { entity ? entity.sources.map(s => { return <div onClick={ () => { hotSetPlayback(findStartOfSource(entity.sources, s)); setSourcesModal(false) } } key={s.id} className="row">{<p className={ (source && s.id === source.id) ? "currentSource" : null }>{cleanUpFileName(s.path)}</p>}</div> }) : null } </Modal> : null }
+            { sourcesModal ? <SourcesModal/> : null }
             { settingsModal ? <AudioSettings setSettingsModal={setSettingsModal} skipIncrament={skipIncrament} setSkipIncrament={setSkipIncrament} playbackSpeed={playbackSpeed} setPlaybackSpeed={setPlaybackSpeed} /> : null }
             <div className="audi-ui">
                 <div className="audiobook-controls-bottom-row">

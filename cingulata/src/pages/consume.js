@@ -1,31 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Navigate } from "react-router-dom";
-import Modal from "../components/modal/modal";
 import { client } from "../App";
 import "./consume.css"
 
 import AudioPlayer from "../components/playback/audioplayer";
 
 const getLength = (sources) => {
-    return new Promise((resolve,reject) => {
-        let reqs = []
-        for(let source of sources) {
-            reqs.push(client.req(`/content/source/${source.id}/info`))
-        }
-        Promise.all(reqs).then(values => {
-            let len = 0
-            let srcLen = {}
-            for(let res of values) {
-                if(!res.content) continue;
-                srcLen[res?.content.api_entity.id] = res?.content?.playback_length
-                len += res?.content?.playback_length
-            }
-            resolve({len, srcLen})
-        })
-        .catch(e => {
-            reject(e)
-        })
-    })
+    let len = 0
+    for (let src of sources) {
+        len += src[1].length
+    }
+    return len
 }
 
 const sourceUrl = (src) => {
@@ -88,25 +73,10 @@ export default function Consume(props) {
     const [ redirect, setRedirect ] = useState()
 
     const getEntity = () => {
-        client.req(`/content/${id}`)
+        client.getCollection(id)
         .then(res => {
-            getLength(res.content.sources)
-            .then(len => {
-                res.content.duration = len.len
-                for(let [key, value] of Object.entries(len.srcLen)) {
-                   res.content.sources.map(e => {
-                       if(e.id === key) e.duration = value
-                       return e
-                   })
-                }
-
-                res.content.sources.sort((a,b) => a.position - b.position)
-
-                setEntity(res.content)
-            })
-            .catch(err => {
-                console.error("failed to get content len", err)
-            })
+            res.duration = getLength(res.sources)
+            setEntity(res)
         })
         .catch(err => {
             console.error(err)
@@ -124,7 +94,7 @@ export default function Consume(props) {
     let player = null
 
     if(entity) {
-        switch(entity.entity_type) {
+        switch(entity.type) {
             case "Audio":
                 player = <AudioPlayer entity={entity} />
             break;

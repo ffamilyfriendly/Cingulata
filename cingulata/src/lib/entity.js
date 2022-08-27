@@ -28,6 +28,7 @@ export class Source {
         this.id = data.id
         this.path = data.path
         this.position = data.position
+        this.length = data.length
     }
 
     delete() {
@@ -93,7 +94,7 @@ export default class Entity {
 
         this.metadata = data.metadata ? new MetaData(this, data.metadata, http) : null
         this.sources = new Map()
-        for(let source of data.sources)
+        for(let source of data.sources.sort((a, b) => a.position - b.position))
             this.sources.set(source.id, new Source(this, source, http))
 
         this.http = http

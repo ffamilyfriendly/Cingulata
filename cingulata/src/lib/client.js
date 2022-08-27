@@ -190,7 +190,7 @@ export class OkapiClient {
 
 
     //content
-    getChildren(id, includeDuration) {
+    getChildren(id) {
         return new Promise((resolve, reject) => {
             this.req(`/content/${id}/children`)
             .then(r => {
@@ -198,6 +198,16 @@ export class OkapiClient {
                 for(let ent of r.content.sort((a, b) => a.position - b.position))
                     rv.set(ent.id, new Entity(ent, this.req.bind(this)))
                 resolve(rv)
+            })
+            .catch(err => reject(err))
+        })
+    }
+
+    getCollection(id) {
+        return new Promise((resolve, reject) => {
+            this.req(`/content/${id}`)
+            .then(r => {
+                resolve(new Entity(r.content, this.req.bind(this)))
             })
             .catch(err => reject(err))
         })

@@ -38,29 +38,20 @@ function ExtendedView(props) {
     const [ length, setLength ] = useState()
 
     const getNext = () => {
-        client.req(`/content/${item.next}`)
+        client.getCollection(item.next)
         .then((r) => {
-            setNext(r.content)
+            setNext(r)
         })
     }
 
     const getLength = () => {
-        let reqs = []
-        for(let source of item.sources) {
-            reqs.push(client.req(`/content/source/${source.id}/info`))
+
+        let len = 0
+        for (let src of item.sources) {
+            len += src.length
         }
-        Promise.all(reqs).then(values => {
-            let len = 0
-            for(let res of values) {
-                len += res?.content?.playback_length
-            }
-            let hours = len / 60 / 60
-            setLength(`${Math.floor(hours)}h ${Math.floor((hours % 1) * 100)}m`)
-        })
-        .catch(e => {
-            // handling errors is for losers
-            console.error(e)
-        })
+        let hours = len / 60 / 60
+        setLength(`${Math.floor(hours)}h ${Math.floor((hours % 1) * 100)}m`)
     }
 
     if(!next && item.next) getNext()
@@ -151,29 +142,19 @@ export default function Collection(props) {
 
     useEffect(() => {
         if(item.entity_type === "Category") {
-            client.req(`/content/${item.id}/children`)
-            .then(r => {
-                setDuration(`${r.content.length} children`) 
+            client.getChildren(item.id)
+            .then(c => {
+                setDuration(`${c.size} children`)
             })
             return
         }
         if(!item.sources) return
-        let reqs = []
-        for(let source of item.sources) {
-            reqs.push(client.req(`/content/source/${source.id}/info`))
+        let len = 0
+        for(let src of item.sources) {
+            len += src.length
         }
-        Promise.all(reqs).then(values => {
-            let len = 0
-            for(let res of values) {
-                len += res?.content?.playback_length
-            }
-            let hours = len / 60 / 60
-            setDuration(`${Math.floor(hours)}h ${Math.floor((hours % 1) * 100)}m`)
-        })
-        .catch(e => {
-            // handling errors is for losers
-            console.error(e)
-        })
+        let hours = len / 60 / 60
+        setDuration(`${Math.floor(hours)}h ${Math.floor((hours % 1) * 100)}m`)
     })
 
     return (
