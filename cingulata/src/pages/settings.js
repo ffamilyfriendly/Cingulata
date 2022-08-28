@@ -104,7 +104,6 @@ function AdminSettings(props) {
 }
 
 export default function Settings(props) {
-    console.log(client.perms.hasPermission(client.perms.FLAGS.GenerateInvite), client.perms.flag)
     return(
         <div className="Settings lightly-padded">
             <div className="SettingsSection">

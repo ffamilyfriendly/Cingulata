@@ -4,7 +4,9 @@ import SearchBar from "../../search/SearchBar";
 import Toggle from "../Toggle";
 import { client } from "../../../App"
 import HoldButton from "../HoldButton";
-import { Link, Navigate } from "react-router-dom"
+import { Navigate, Link } from "react-router-dom"
+import "./ContentSettings.css"
+import Icon from "../../icon";
 
 export function BaseEntityManager(props) {
     const [entityType, setEntityType] = useState(props.entityType||"NO")
@@ -120,9 +122,9 @@ function EntitiesList(props) {
     const [ deleteMode, setDeleteMode ] = useState(false)
 
     const fetchEntities = () => {
-        client.req("/content/all/children")
+        client.getChildren("all")
         .then(res => {
-            setEntities(res.content)
+            setEntities(res)
         })
         .catch(e => {
             props.setStatus("Something went wrong. (check logs)", "error", 5)
@@ -148,25 +150,67 @@ function EntitiesList(props) {
         })
     }
 
+    const CategoryItem = (props) => {
+        const [ open, setOpen ] = useState(props.open||false)
+
+        return (
+            <div className="manage-category">
+                <div className="manage-header">
+                <Link className="btn-settings" to={`/edit/${props.entity.id}`}>{props.entity.metadata.name}</Link>
+                    <button onClick={() => setOpen(!open)}><Icon type={ open ? "expand" : "shrink"} /> </button>
+                </div>
+                <div className="manage-category-content">
+                    { open ? props.children : null }
+                </div>
+            </div>
+        )
+    }
+
+    const [ query, setQuery ] = useState("")
+
+    // It's recursion time hell yeah
+    const generateEntityTree = (parent = "root") => {
+        let items = [ ]
+        let includesQuery = false
+        for(let [_id, e] of entities) {
+
+            if(e.parent === parent) {
+                if(!includesQuery && query) includesQuery = e.metadata.name.toLowerCase().includes(query)
+                if(e.type === "Category") {
+                    const r = generateEntityTree(e.id)
+                    if(r.includesQuery) includesQuery = true
+                    items.push(<CategoryItem open={includesQuery} key={e.id} entity={e} > { r.items } </CategoryItem>)
+                } else {
+                    if(!query || (query && e.metadata.name.toLowerCase().includes(query))) {
+                        items.push(
+                            <div key={e.id} className="row">
+                                <div className="entityinfo">
+                                     <p> {e.metadata ? e.metadata.name : e.id} </p> <p><b>type:</b> {e.type}</p>
+                                </div>
+                                {
+                                        deleteMode ?
+                                        <a onClick={() => deleteEntity(e.id)} href="#delete" className="btn-settings">Delete</a>
+                                        :
+                                        <Link className="btn-settings" to={`/edit/${e.id}`}>Manage</Link>
+                                    }
+                            </div>
+                        )
+                    }
+                }
+            }
+        }
+        return {items, includesQuery}
+    }
+
     return (
-        <div>
+        <div className="manage-main">
             <button className={"btn full-width " + (deleteMode ? "btn-error" : "btn-success") } onClick={toggleDeleteMode}> turn {deleteMode ? "off" : "on"} delete mode </button>
-            { entities ? entities.map(e => {
-                return (
-                    <div key={e.id} className="row">
-                        <div className="entityinfo">
-                            <p>{e.metadata ? e.metadata.name : e.id}</p>
-                            <p><b>type:</b> {e.entity_type}</p>
-                        </div>
-                        {
-                            deleteMode ?
-                            <a onClick={() => deleteEntity(e.id)} href="#delete" className="btn-settings">Delete</a>
-                            :
-                            <Link className="btn-settings" to={`/edit/${e.id}`}>Manage</Link>
-                        }
-                    </div>
-                )
-            }) : null }
+            <div className="search-filter">
+                <input placeholder="Search" type="search" value={query} onChange={(v) => { setQuery(v.target.value) }}></input>
+            </div>
+            <div className="manage-items">
+                { entities ? generateEntityTree().items : null }
+            </div>
         </div>
     )
 }

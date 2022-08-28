@@ -93,7 +93,7 @@ export default function Consume(props) {
 
     let player = null
 
-    if(entity) {
+    if(entity && entity.sources.size) {
         switch(entity.type) {
             case "Audio":
                 player = <AudioPlayer entity={entity} />
@@ -111,7 +111,7 @@ export default function Consume(props) {
         <div className="consume">
             { redirect ? <Navigate replace="true" to={redirect} /> : null }
             {
-                player ? player : <div className="consume-noplayer"> <p>There is currently no player for media of this type</p> </div>
+                player ? player : <div className="consume-noplayer"> <p>{ entity?.sources.size === 0 ? "This entity has no media sources and can therefore not be played. Sorry about that" : "There is currently no player for media of this type"}</p> </div>
             }
         </div>
     )

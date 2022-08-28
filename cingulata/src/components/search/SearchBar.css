@@ -13,6 +13,9 @@
     width: 100%;
     padding: 1rem;
     min-height: 50vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     background: inherit;
     overflow: auto;
 }
@@ -30,11 +33,14 @@
     background-color: transparent;
     border: none;
     color: white;
+    width: 100%;
 }
 
 .searchbar-row {
     display: flex;
     justify-content: space-between;
+    max-width: 900px;
+    width: 90%;
 }
 
 .searchbar-row button {

@@ -1,7 +1,10 @@
-import React from "react"
+import React, {useState} from "react"
 import SearchBar from "../components/search/SearchBar"
+import { Navigate } from "react-router-dom"
 
 export default function SearchPage() {
+
+    const [ redirect, setRedirect ] = useState()
 
     const handleSelected = (ev) => {
         switch(ev.entity_type) {
@@ -17,7 +20,8 @@ export default function SearchPage() {
     return(
         // <SearchBar onSelected={(e) => { setParent(e.id); setSearch(false) }} dismiss={() => setSearch(false)} type={["Category"]} />
         <div className="search">
-            <SearchBar dismiss={() => {}} onSelected={handleSelected} type={["Audio", "Movie", "Series"]} />
+            { redirect ? <Navigate replace="true" to={redirect}/> : null }
+            <SearchBar dismiss={() => { setRedirect("/") }} onSelected={handleSelected} type={["Audio", "Movie", "Series"]} />
         </div>
     )
 }

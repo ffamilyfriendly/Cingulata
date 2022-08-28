@@ -155,6 +155,11 @@ button:disabled {
         position: initial !important;
     }
 
+    .btn:hover {
+        transform: none;
+        filter: hue-rotate(30deg);
+    }
+
     #content {
         position: relative;
         width: 90%;
