@@ -12,7 +12,7 @@
     padding: 0.5rem;
 }
 
-.content {
+.InviteGenerator > .content {
     width: 100%;
     display: flex;
     justify-content: center;

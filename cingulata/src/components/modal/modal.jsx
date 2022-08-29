@@ -20,6 +20,16 @@ export default class Modal extends React.Component {
                     <div className="content">
                         { this.props.children }
                     </div>
+
+                    {
+                        this.props.buttons ?
+                        <div className="modal-buttons">
+                            {this.props.buttons.map(b => {
+                                return <button key={ b.text } className={"btn " + b.class} onClick={b.onClick}>{b.text}</button>
+                            })}
+                        </div>
+                        : null
+                    }
                 </div>
             </div>
         )

@@ -70,3 +70,10 @@ self.addEventListener('message', (event) => {
 });
 
 // Any other custom service worker logic can go here.
+
+/*
+  Here's the custom requests cingulatta will meddle with.
+  Firstly, fetching of media content. We can of course skip the api key as downloaded content will not need authentication as it has already been granted by the server at one point in time.
+  
+  http://localhost:3000/content/source/15618141918094909255/media?key=<not interesting>
+*/

@@ -151,7 +151,8 @@ export default function Collection(props) {
         if(!item.sources) return
         let len = 0
         for(let src of item.sources) {
-            len += src.length
+            // this is really dumb but it works. 
+            len += src.length < 5 ? src[1].length : src.length
         }
         let hours = len / 60 / 60
         setDuration(`${Math.floor(hours)}h ${Math.floor((hours % 1) * 100)}m`)

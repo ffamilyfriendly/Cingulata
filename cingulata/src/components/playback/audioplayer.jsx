@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import Icon from "../../components/icon";
 import Modal from "../../components/modal/modal";
 import { client } from "../../App";
+import { canDownload, downloadFiles } from "../../lib/downloadManager";
+import Collection from "../content/collection";
 
 const pad = (nr) => {
     let p = nr.toString()
@@ -94,6 +96,40 @@ function AudioSettings(props) {
     )
 }
 
+function DownloadModal(props) {
+    const { setDownloadModal, entity } = props
+    const [ fileDetails, setFileDetails ] = useState(false)
+    const [ error, setError ] = useState(false)
+    const [ downloadProgress, setDownloadProgress ] = useState(0)
+
+    useEffect(() => {
+        client.req(`/content/${entity.id}/info`)
+        .then(async res => {
+            const canDo = await canDownload(res.content.file_size)
+            if(!canDo.enough) return setError(`Cannot download this entity. Missing ${(canDo.delta/1048576).toFixed(2) * -1}Mb`)
+            setFileDetails(res.content)
+        })
+        .catch(err => {
+            console.error(err)
+        })
+
+        
+    }, [])
+    console.log("re-render")
+    const doDownload = () => {
+        if(!fileDetails || error) return
+        downloadFiles(Array.from(entity.sources.values()).map(v => sourceUrl(v.id)), entity.id, { chunkSize: 50 })
+        
+    }
+    return (
+        <Modal buttons={[ { text: "Delete", class: "btn-disabled", onClick: () => { alert("ah") } }, { text: "Download", class: `btn-${(fileDetails && !error) ? "primary" : "disabled"}`, onClick: doDownload } ]} title={"Download " + entity.metadata.name} onDismiss={() => { setDownloadModal(false) }}>
+            { error ? <div style={{"backgroundColor": `var(--error)`, "justifyContent": "center"}} className="error full-width row"><p style={{"fontWeight": "bolder", "textAlign": "center"}}>{error}</p></div> : null}
+            <Collection data={entity} />
+            <progress className="prog progress-primary" max="100" value={downloadProgress} min="0"></progress>
+        </Modal>
+    )
+}
+
 export default function AudioPlayer(props) {
     const { entity } = props
 
@@ -107,6 +143,7 @@ export default function AudioPlayer(props) {
 
     let [sourcesModal, setSourcesModal] = useState(false)
     let [settingsModal, setSettingsModal] = useState(false)
+    let [downloadModal, setDownloadModal] = useState(false)
 
     document.title = source ? `${cleanUpFileName(source.path)} » ${entity?.metadata?.name}` : `${entity?.metadata?.name} » Armadillo`
 
@@ -187,7 +224,7 @@ export default function AudioPlayer(props) {
             .then(lw => {
                 if(lw) setPlayback(lw)
             })
-            .catch(err => {
+            .catch(_err => {
                 setPlayback(0)
             })
         }
@@ -220,9 +257,10 @@ export default function AudioPlayer(props) {
         <div className="audioplayer">
             { sourcesModal ? <SourcesModal/> : null }
             { settingsModal ? <AudioSettings setSettingsModal={setSettingsModal} skipIncrament={skipIncrament} setSkipIncrament={setSkipIncrament} playbackSpeed={playbackSpeed} setPlaybackSpeed={setPlaybackSpeed} /> : null }
+            { downloadModal ? <DownloadModal setDownloadModal={setDownloadModal} entity={entity} /> : null }
             <div className="audi-ui">
                 <div className="audiobook-controls-bottom-row">
-                        <button onClick={() => { alert("not implemented") }}> 
+                        <button onClick={() => { setDownloadModal(true) }}> 
                             <Icon type="download2" />
                         </button>
                         <button onClick={() => { setSourcesModal(true) }}>
