@@ -49,26 +49,73 @@ function write(key, value) {
     })
 }
 
-let data = { loaded: 0, total: 0, segment: 0 }
+let data = { loaded: 0, total: 0, segment: 0, segments: 0 }
 
-function downloadFile(url, containerName, options) {
-    fetch(url, { method: "GET", mode: "cors", headers: { "Range": `bytes=${data.loaded}-${data.loaded + (options.chunkSize * 1000000)}` } })
-        .then(response => {
-            //if(!data.total) data.total = response.headers.get("Content-Range").split("/")[1]
-            data.loaded += Number(response.headers.get("content-length"))
-            console.log(response)
-            response.blob()
-            .then(b => {
-                console.log("actually got data lol")
-                console.log(b)                
+/*
+
+    Ok so okapi is dumb which causes the aborts if chunkSize is larger than the file it tries to download.
+    How fix? Do preamble request with a range of like 1000kb just to get size headers and shit then limit the max
+    range we ask for as to not surpass the size of the file we are trying to download. Profit :)
+
+*/
+
+
+// get file size and so forth so we dont request above it in content-length if file is small and can fit in one part
+// this is needed as otherwise the requests aborts due to some issues with okapi that i am not smart enough to fix xd
+function preamble(url) {
+    return new Promise((resolve, reject) => {
+        fetch(url, { method: "GET", mode: "cors", headers: { "Range": `bytes=0-100` } })
+            .then((r) => {
+                const len = r.headers.get("content-length")
+                const range = Number(r.headers.get("content-range").split("/")[1]) - 1
+                if(!range) resolve( { acceptsRange: false, len } )
+                else resolve( { acceptsRange: true, len, range } )
             })
+            .catch(reject)
+    })
+}
+
+async function downloadFile(url, containerName, options) {
+    if(!data.total) {
+        const r = await preamble(url)
+        data.total = r.range
+        data.segments = Math.ceil(r.range / (options.chunkSize * 1000000))
+    }
+    console.log(data)
+
+    return new Promise(async (resolve,reject) => {
+        const doReq = () => {
+            return new Promise((res, rej) => {
+                fetch(url, { method: "GET", mode: "cors", headers: { "Range": `bytes=${data.loaded}-${Math.min((data.loaded + (options.chunkSize * 1000000)), data.total)}` } })
+                .then(response => {
+                    data.loaded += Number(response.headers.get("content-length"))
+                    response.blob()
+                    .then(b => {
+                        data.segment += 1
+                        resolve(b)              
+                    })
+                    .catch(err => {
+                        console.error("blob failed", err)
+                    })
+                })
+                .catch(error => {
+                    console.error("main request failed", error)
+                })
+            })
+        }
+
+        while(data.loaded < data.total) {
+            console.log("uh doing thing")
+            const b = await doReq()
+            console.log("uh did thing")
+            write(`${containerName}|${url}|${data.segment}`, b)
+            .then(a => {console.log(a)})
             .catch(err => {
-                console.error("blob failed", err)
+                console.log(err)
             })
-        })
-        .catch(error => {
-            console.error("main request failed", error)
-        })
+        }
+        //resolve()
+    })
 }
 
 /**
@@ -90,9 +137,9 @@ export function downloadFiles(url, containerName, options) {
     return new Promise( async (resolve, reject) => {
         let con = await connect()
         const files = typeof url === "string" ? [ url ] : url
-        console.log(`downloading ${files.length} file(s):\n`, files.join("\n"))
         for(let file of files) {
-            downloadFile(file, containerName, options)
+            console.log("doing file", file)
+            await downloadFile(file, containerName, options)
         }
     })
 }
