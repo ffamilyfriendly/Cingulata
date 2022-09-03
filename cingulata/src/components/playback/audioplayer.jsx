@@ -4,6 +4,7 @@ import Modal from "../../components/modal/modal";
 import { client } from "../../App";
 import { canDownload, downloadFiles } from "../../lib/downloadManager";
 import Collection from "../content/collection";
+import { createSearchParams } from "react-router-dom";
 
 const pad = (nr) => {
     let p = nr.toString()
@@ -212,7 +213,7 @@ export default function AudioPlayer(props) {
             }
         }, 1000)
 
-        audio.onended = () => { const nextSource = findNextSource(entity.sources, source); nextSource ? hotSetPlayback(nextSource.tally) : console.log("handle track ended")}
+        audio.onended = () => { const nextSource = findNextSource(Array.from(entity.sources.values()), source); nextSource ? hotSetPlayback(nextSource.tally) : console.log("handle track ended")}
 
         return () => clearInterval(interval)
     })

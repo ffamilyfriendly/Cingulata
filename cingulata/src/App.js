@@ -17,7 +17,7 @@ import Edit from "./pages/edit"
 import SearchPage from "./pages/search"
 import Consume from "./pages/consume"
 
-const client = new OkapiClient(`${window.location.protocol}//${window.location.hostname}:3000`)
+const client = new OkapiClient(`${window.location.protocol}//${window.location.hostname}/api`)
 
 export { client };
 
