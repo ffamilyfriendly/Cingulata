@@ -1,5 +1,3 @@
-import { client } from "../App"
-
 export function canDownload(bytes) {
     return new Promise((resolve, reject) => {
         if(!("storage" in navigator)) resolve({ enough: true, delta: 1337 })
@@ -81,7 +79,6 @@ async function downloadFile(url, containerName, options) {
         data.total = r.range
         data.segments = Math.ceil(r.range / (options.chunkSize * 1000000))
     }
-    console.log(data)
 
     return new Promise(async (resolve,reject) => {
         const doReq = () => {
@@ -92,7 +89,7 @@ async function downloadFile(url, containerName, options) {
                     response.blob()
                     .then(b => {
                         data.segment += 1
-                        resolve(b)              
+                        res(b)              
                     })
                     .catch(err => {
                         console.error("blob failed", err)
@@ -105,16 +102,16 @@ async function downloadFile(url, containerName, options) {
         }
 
         while(data.loaded < data.total) {
-            console.log("uh doing thing")
             const b = await doReq()
-            console.log("uh did thing")
+            const t = new Blob([b])
             write(`${containerName}|${url}|${data.segment}`, b)
-            .then(a => {console.log(a)})
+            .then(_a => {console.log(`downloaded part of ${url}`);})
             .catch(err => {
-                console.log(err)
+                console.log(`error with ${url} download`, err)
             })
         }
-        //resolve()
+        data = { loaded: 0, total: 0, segment: 0, segments: 0 }
+        resolve()
     })
 }
 
@@ -136,9 +133,10 @@ export function downloadFiles(url, containerName, options) {
 
     return new Promise( async (resolve, reject) => {
         let con = await connect()
+        con.onerror = (e) => console.error("con", e)
         const files = typeof url === "string" ? [ url ] : url
         for(let file of files) {
-            console.log("doing file", file)
+            console.log("downloading file", file)
             await downloadFile(file, containerName, options)
         }
     })
