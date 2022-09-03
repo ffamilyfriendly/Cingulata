@@ -103,9 +103,7 @@ async function downloadFile(url, containerName, options) {
 
         while(data.loaded < data.total) {
             const b = await doReq()
-            const t = new Blob([b])
             write(`${containerName}|${url}|${data.segment}`, b)
-            .then(_a => {console.log(`downloaded part of ${url}`);})
             .catch(err => {
                 console.log(`error with ${url} download`, err)
             })
@@ -123,21 +121,29 @@ async function downloadFile(url, containerName, options) {
  * @param {Function} [options.onProgress] will be called any time a chunk has been downloaded & saved
  * @param {Function} [options.onComplete] will be called when all file(s) have been successfully downloaded
  * @param {Number} [options.chunkSize] the size of the chunks. Default is 100Mib
+ * @param {Boolean} [options.debug] show debug logs
  */
 export function downloadFiles(url, containerName, options) {
 
     const defaults = {
-        chunkSize: 50
+        chunkSize: 50,
+        debug: false
     }
     options = Object.assign({}, defaults, options)
 
     return new Promise( async (resolve, reject) => {
         let con = await connect()
-        con.onerror = (e) => console.error("con", e)
+        con.onerror = (e) => reject(e)
         const files = typeof url === "string" ? [ url ] : url
         for(let file of files) {
-            console.log("downloading file", file)
+            if(options.debug) console.log("downloading file", file)
             await downloadFile(file, containerName, options)
+            const f = files.indexOf(file)
+            if(options.onProgress) options.onProgress({ file: { index: files.indexOf(file), url: file }, progress: ((f + 1) / files.length) })
         }
+
+        if(options.onComplete) options.onComplete()
+
+        resolve()
     })
 }

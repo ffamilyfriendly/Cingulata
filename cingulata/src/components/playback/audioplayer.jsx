@@ -118,7 +118,7 @@ function DownloadModal(props) {
     console.log("re-render")
     const doDownload = () => {
         if(!fileDetails || error) return
-        downloadFiles(Array.from(entity.sources.values()).map(v => sourceUrl(v.id)), entity.id, { chunkSize: 50 })
+        downloadFiles(Array.from(entity.sources.values()).map(v => sourceUrl(v.id)), entity.id, { chunkSize: 50, onProgress: (v) => { console.log(v) } })
         
     }
     return (
