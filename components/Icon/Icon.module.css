@@ -1,0 +1,8 @@
+.svg {
+    display: block;
+    height: 1.15em;
+}
+
+.svg path {
+    fill: var(--ctx_on_bg);
+}

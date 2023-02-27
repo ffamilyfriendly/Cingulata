@@ -1,0 +1,30 @@
+.button {
+    border: 0;
+    background-color: var(--ctx_bg);
+    color: var(--ctx_on_bg);
+
+    padding: 0.5rem 1rem 0.5rem 1rem;
+    border-radius: 0.2rem;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    font-size: 1rem;
+}
+
+.disabled {
+    cursor: not-allowed;
+    --ctx_bg: gray;
+    --ctx_on_bg: white;
+}
+
+.wide {
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+
+.full {
+    width: 100%;
+}

@@ -1,0 +1,1 @@
+export type Styles = "info" | "success" | "error" | "primary" | "secondary"

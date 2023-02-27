@@ -1,5 +1,6 @@
 import Head from 'next/head'
 import { Inter } from 'next/font/google'
+import Button from '@/components/Button/'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -13,8 +14,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={inter.className}>
-        <h1>penis</h1>
-        <p>blah blah text</p>
+        <h1>Test</h1>
+        <p>right now the index page is just a testing zone for new components</p>
+        <Button icon="star" onclick={() => { alert("this is an alert") }} style="primary">Click me</Button>
       </main>
     </>
   )

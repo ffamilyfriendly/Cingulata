@@ -7,9 +7,51 @@
 :root {
   --background: rgb(8, 8, 8);
   --on_background: white;
+
+  --info: blue;
+  --on_info: white;
+
+  --error: red;
+  --on_error: white;
+
+  --success: green;
+  --on_success: white;
+
+  --primary: #D84727;
+  --on_primary: white;
+
+  --secondary: #01949A;
+  --on_secondary: white;
 }
 
 body {
   background-color: var(--background);
   color: var(--on_background);
+}
+
+/* COLORS */
+
+.info {
+  --ctx_bg: var(--info);
+  --ctx_on_bg: var(--on_info)
+}
+
+.error {
+  --ctx_bg: var(--error);
+  --ctx_on_bg: var(--on_error)
+}
+
+.success {
+  --ctx_bg: var(--success);
+  --ctx_on_bg: var(--on_success)
+}
+
+.primary {
+  --ctx_bg: var(--primary);
+  --ctx_on_bg: var(--on_primary)
+}
+
+.secondary {
+  --ctx_bg: var(--secondary);
+  --ctx_on_bg: var(--on_secondary)
 }
