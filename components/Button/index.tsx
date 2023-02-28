@@ -18,10 +18,9 @@ export default function Button({ style, children, disabled = false, width, icon,
         if(disabled) return event.preventDefault()
         if(props.onclick) props.onclick(event)
     }
-
     return (
         <button onClick={handleOnClick} className={ styling.button + ` ${style} ${width ? styling[width] : ""} ${disabled ? styling.disabled : ""}` }>
-            { icon ? <Icon type={icon} /> : null }
+            { icon ? <Icon className={ icon === "loading" ? styling.icon_loading : "" } type={icon} /> : null }
             <p>{ children }</p>
         </button>
     )

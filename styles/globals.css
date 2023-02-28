@@ -8,6 +8,11 @@
   --background: rgb(8, 8, 8);
   --on_background: white;
 
+  --surface: #121212;
+  --on_surface: white;
+
+  /* THEME COLORS */
+
   --info: blue;
   --on_info: white;
 

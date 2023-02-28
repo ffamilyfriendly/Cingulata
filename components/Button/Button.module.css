@@ -12,6 +12,8 @@
     justify-content: center;
     gap: 0.3rem;
     font-size: 1rem;
+
+    transition: .2s;
 }
 
 .disabled {
@@ -27,4 +29,19 @@
 
 .full {
     width: 100%;
+}
+
+.icon_loading {
+    animation-name: icon_spin;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes icon_spin {
+    0% {
+        transform: 0;
+    }
+    100% {
+        transform: rotateZ(360deg);
+    }
 }

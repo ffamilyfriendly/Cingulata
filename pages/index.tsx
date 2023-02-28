@@ -1,10 +1,24 @@
 import Head from 'next/head'
 import { Inter } from 'next/font/google'
 import Button from '@/components/Button/'
+import { Dispatch, SetStateAction, useState } from 'react'
+import Modal from '@/components/Modal'
 
-const inter = Inter({ subsets: ['latin'] })
+
+
+function AidsModal(props: { show: Dispatch<SetStateAction<boolean>> }) {
+  return (
+    <Modal onclose={() => { props.show(false) }} title="Aids Report">
+      Subject <b>Buster</b> has tested positibe for all kinds of aids
+    </Modal>
+  )
+}
 
 export default function Home() {
+
+  const [ modal, showModal ] = useState(false)
+  const [ disabled, setDisabled ] = useState(false)
+
   return (
     <>
       <Head>
@@ -13,10 +27,11 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={inter.className}>
+      <main>
+        { modal ? <AidsModal show={showModal} /> : null }
         <h1>Test</h1>
         <p>right now the index page is just a testing zone for new components</p>
-        <Button icon="star" onclick={() => { alert("this is an alert") }} style="primary">Click me</Button>
+        <Button icon="star" onclick={() => { showModal(!modal) }} style="primary">Click me</Button>
       </main>
     </>
   )

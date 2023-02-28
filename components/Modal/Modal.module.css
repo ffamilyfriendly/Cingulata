@@ -1,0 +1,71 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 2;
+
+    background-color: rgba(0, 0, 0, 0.3);
+    animation-name: mc_in;
+    animation-duration: .5s;
+}
+
+.body {
+    background-color: var(--surface);
+    color: var(--on_surface);
+    border-radius: 0.3rem;
+
+    animation-name: m_in;
+    animation-duration: .5s;
+    padding: 1rem;
+    max-width: 90%;
+}
+
+.content {
+    margin-top: 0.5rem;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.close_btn {
+    background-color: transparent;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+.close_btn > svg {
+    height: 2em;
+}
+
+.close_btn > svg > path {
+    fill: gray;
+}
+
+@keyframes mc_in {
+    0% {
+        opacity: 0%;
+    }
+
+    100% {
+        opacity: 100%;
+    }
+}
+
+@keyframes m_in {
+    0% {
+        transform: scale(.2) translateY(-150%);
+    }
+
+    100% {
+        transform: none;
+    }
+}

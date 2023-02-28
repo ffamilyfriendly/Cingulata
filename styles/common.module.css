@@ -1,0 +1,17 @@
+.container {
+    padding: 1rem;
+}
+
+.center {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.surface {
+    background-color: var(--surface);
+    color: var(--on_surface);
+    border-radius: .3rem;
+}
