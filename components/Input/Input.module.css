@@ -1,0 +1,42 @@
+.label {
+    color: rgba(255, 255, 255, 0.666);
+}
+
+.container {
+    --ctx_on_bg: white;
+    background-color: rgba(255, 255, 255, 0.211);
+    display: flex;
+    border-radius: 0.2rem;
+    padding: 0.33rem;
+    gap: 0.5rem;
+    position: relative;
+}
+
+.container.error {
+    outline: 2px solid var(--error);
+}
+
+.input {
+    border: none;
+    background-color: transparent;
+    font-size: 1rem;
+    padding: 0.2rem;
+    color: white;
+}
+
+.icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0.1rem;
+}
+
+.error_message {
+    position: absolute;
+    bottom: -1.1rem;
+    font-size: 0.8rem;
+    display: flex;
+    --ctx_on_bg: var(--error);
+    color: var(--error);
+    gap: 0.2rem;
+}

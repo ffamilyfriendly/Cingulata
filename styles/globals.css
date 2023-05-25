@@ -27,6 +27,9 @@
 
   --secondary: #01949A;
   --on_secondary: white;
+
+  --tertiary: transparent;
+  --on_tertiary: white;
 }
 
 body {
@@ -34,29 +37,53 @@ body {
   color: var(--on_background);
 }
 
+.stack {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--ctx_gap);
+}
+
+.spaced-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cramped-row {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
 /* COLORS */
 
 .info {
-  --ctx_bg: var(--info);
-  --ctx_on_bg: var(--on_info)
+  --ctx_bg: var(--info) !important;
+  --ctx_on_bg: var(--on_info) !important
 }
 
 .error {
-  --ctx_bg: var(--error);
-  --ctx_on_bg: var(--on_error)
+  --ctx_bg: var(--error) !important;
+  --ctx_on_bg: var(--on_error) !important
 }
 
 .success {
-  --ctx_bg: var(--success);
-  --ctx_on_bg: var(--on_success)
+  --ctx_bg: var(--success) !important;
+  --ctx_on_bg: var(--on_success) !important
 }
 
 .primary {
-  --ctx_bg: var(--primary);
-  --ctx_on_bg: var(--on_primary)
+  --ctx_bg: var(--primary) !important;
+  --ctx_on_bg: var(--on_primary) !important
 }
 
 .secondary {
-  --ctx_bg: var(--secondary);
-  --ctx_on_bg: var(--on_secondary)
+  --ctx_bg: var(--secondary) !important;
+  --ctx_on_bg: var(--on_secondary) !important
+}
+
+.tertiary {
+  --ctx_bg: var(--tertiary) !important;
+  --ctx_on_bg: var(--on_tertiary) !important;
 }

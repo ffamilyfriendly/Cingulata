@@ -30,24 +30,38 @@ const validateEmail = (value: string) => {
     return rv
 }
 
-export default function Login() {
+const validateInvite = (value: string) => {
+    let rv: Result = { ok: true, message: "" }
+    
+    if(value.length < 5) {
+        rv.ok = false
+        rv.message = "invite must be 5 characters or more"
+    }
+
+    return rv
+}
+
+export default function Register() {
 
     const { push } = useRouter()
 
     const [ email, setEmail ] = useState<string>()
     const [ password, setPassword ] = useState<string>()
+    const [ invite, setInvite ] = useState<string>()
+
     const [ loading, setLoading ] = useState(false)
+    const [ inviteOnly, setInviteOnly ] = useState<boolean|undefined>()
     const [ error, setError ] = useState<{ label: string, text: string }>()
 
     const onClick = useCallback(async () => {
         if(!email || !password) return
+        if(inviteOnly && !invite) return
 
         setLoading(true)
-        client.login(email, password)
+        client.register(email, password, invite)
         .then(() => {
-            console.log("logged in")
             setLoading(false)
-            push("/")
+            push("/auth/login")
         })
         .catch((e: FailResponse) => {
             setError({ label: e.type, text: e.displayText })
@@ -55,10 +69,27 @@ export default function Login() {
         })
     }, [ loading, email, password ])
 
+    useEffect(() => {
+
+        const urlParams = new URLSearchParams(window.location.search)
+        if(urlParams.has("invite")) {
+            setInvite(urlParams.get("invite") as string)
+        }
+
+        client.hostConfig
+            .then((config) => {
+                if(config.invite_only) setInviteOnly(true)
+            })
+    }, [])
+
     return (
         <div className={styles.center + " stack"}>
             <div className="stack">
-                <h1 style={{ "textAlign": "center" }}>Sign In</h1>
+                <h1 style={{ "textAlign": "center" }}>Create Account</h1>
+
+                <div className={ typeof inviteOnly == "undefined" ? styles.skeleton : ""}>
+                    <StatusBox title={ inviteOnly ? "invite only" : "Public instance"} icon="info" style="info"> <p>{ inviteOnly ? "This instance is invite only" : "This instance is public" }</p> </StatusBox>
+                </div>
 
                 { error ?
                     <StatusBox title={`${error.label} error`} icon="error" style="error"> {error.text} </StatusBox>:
@@ -69,12 +100,13 @@ export default function Login() {
                     <div className="stack">
                         <Input setValue={setEmail} value={email as string} label="Email" icon="user" placeholder="Email" validate={validateEmail}></Input>
                         <Input setValue={setPassword} value={password as string} label="Password" icon="password" type="password" placeholder="Password" validate={validatePassword}></Input>
+                        <Input setValue={setInvite} value={invite as string} label="Invite" icon="ticket" placeholder="invite" validate={validateInvite}></Input>
 
                         <Button loading={loading} onclick={onClick} disabled={false} style="primary" width="full">
-                        Login
+                        Register
                         </Button>
-                        <Button onclick="/auth/register" style="tertiary" width="wide">
-                            Register
+                        <Button onclick="/auth/login" style="tertiary" width="wide">
+                            Sign in
                         </Button>
                     </div>
                 </div>

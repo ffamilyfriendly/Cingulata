@@ -1,0 +1,12 @@
+.main {
+    background-color: var(--ctx_bg);
+    color: var(--ctx_on_bg);
+    padding: 1rem;
+    font-size: 0.9rem;
+    border-radius: .3rem;
+    --ctx_gap: 0.3rem;
+}
+
+.icon {
+    font-size: 1.5rem;
+}

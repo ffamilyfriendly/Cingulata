@@ -1,18 +1,23 @@
-import { MouseEventHandler } from "react"
-import Button from "../Button"
+import { MouseEventHandler, MouseEvent } from "react"
 import Icon from "../Icon"
 import style from "./Modal.module.css"
+
+type clickEv = MouseEventHandler<HTMLButtonElement|HTMLDivElement>
 
 interface ModalProps {
     title: string,
     children: JSX.Element|(JSX.Element|string)[],
-    onclose: MouseEventHandler<HTMLButtonElement>
+    onclose: clickEv
 }
 
 export default function( { title, children, onclose }: ModalProps ) {
 
+    const handleContainerClicked = (ev: MouseEvent<HTMLDivElement>) => {
+        if(ev.target === ev.currentTarget) onclose(ev)
+    }
+
     return (
-        <div className={style.container}>
+        <div onClick={handleContainerClicked} className={style.container}>
             <div className={style.body}>
                 <div className={style.header}>
                     <h2>{title}</h2>

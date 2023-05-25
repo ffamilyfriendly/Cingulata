@@ -8,6 +8,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    --ctx_gap: 1rem;
 }
 
 .surface {
@@ -15,3 +16,29 @@
     color: var(--on_surface);
     border-radius: .3rem;
 }
+
+.skeleton {
+    position: relative;
+    overflow: hidden;
+}
+
+.skeleton::before {
+    content: "";
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    background: #eee;
+    background: linear-gradient(110deg, var(--surface) 8%, #3b3b3b 18%, var(--surface) 33%);
+    background-size: 200% 100%;
+    animation: 1.5s shine linear infinite;
+}
+
+@keyframes shine {
+    to {
+      background-position-x: -200%;
+    }
+  }
