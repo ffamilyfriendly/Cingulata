@@ -8,11 +8,15 @@ export const Routes = {
     Register: `/user` as const,
 
     // CONTENT
-    GetCollection(id: string) {
+    Entity(id: string) {
         return `/content/${id}` as const
     },
 
-    GetSources(parent: string) {
+    MetaData(id: string) {
+        return `/content/id/metadata` as const
+    },
+
+    EntitySources(parent: string) {
         return `/content/${parent}/sources` as const
     },
 
@@ -33,12 +37,16 @@ export const Routes = {
         return `/content/search?${queryString( Object.entries(query) )}` as const
     },
 
+    LastWatched(entity: string) {
+        return `/content/${entity}/lastwatched` as const
+    }
+
 
 
 
 }
 
-type HTTPOptions = "GET"|"POST"|"PUT"|"DELETE"
+type HTTPOptions = "GET"|"POST"|"PUT"|"DELETE"|"PATCH"
 type Header = [string, string][]
 type FetchOptions = {
     mode?: "cors"|"no-cors"|"same-origin",
@@ -75,7 +83,7 @@ export class Rest {
     private token: string
 
     constructor() {
-        this.token = ""    
+        this.token = "" 
     }
 
     setToken(token: string) {
@@ -87,7 +95,7 @@ export class Rest {
         opts.method = method
         if(body) opts.body = JSON.stringify(body)
 
-        if(this.token) opts.headers?.push(["token", this.token])
+        if(this.token && !opts.headers?.find(e => e[0] === "token")) opts.headers?.push(["token", this.token])
 
         return new Promise((resolve, reject) => {
             fetch(`${API_PATH}${path}`, opts)
@@ -112,8 +120,15 @@ export class Rest {
         return this.req(path, "GET")
     }
 
+    delete(path: string) {
+        return this.req(path, "DELETE")
+    }
+
     post(path: string, data: Object) {
         return this.req(path, "POST", data)
     }
 
+    patch(path: string, data: Object) {
+        return this.req(path, "PATCH", data)
+    }
 }

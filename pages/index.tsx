@@ -1,8 +1,9 @@
 import Head from 'next/head'
-import { Inter } from 'next/font/google'
 import Button from '@/components/Button/'
-import { Dispatch, SetStateAction, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import Modal from '@/components/Modal'
+import { client } from './_app'
+import { EntityTypes } from '@/lib/api/managers/ContentManager'
 
 
 
@@ -18,6 +19,10 @@ export default function Home() {
 
   const [ modal, showModal ] = useState(false)
   const [ disabled, setDisabled ] = useState(false)
+
+  useEffect(() => {
+    const e = client.content.get("15533354474228222560")
+  }, [])
 
   return (
     <>
