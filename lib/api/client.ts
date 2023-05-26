@@ -1,4 +1,5 @@
 import { StringMappingType } from "typescript"
+import ContentManager from "./managers/ContentManager"
 import { Rest, Routes, SuccessResponse } from "./rest"
 
 const API_PATH: string = "https://staging.familyfriendly.xyz/api/"
@@ -17,19 +18,22 @@ type HostConfig = {
 
 export class Client {
     rest: Rest
+    content: ContentManager
+
     constructor() {
         this.rest = new Rest()
-        
+        this.content = new ContentManager(this)
+
         this.checkToken()
     }
 
     private checkToken() {
         if(typeof window === "undefined") return console.log(":(")
         const token = window.localStorage.getItem("okapi_token")
-        if(!token) return
+        if(!token) return 
 
         try {
-            decodeJWT(token)
+            console.log(decodeJWT(token))
             this.rest.setToken(token)
         } catch(err) {
             console.warn("failed to parse token")
@@ -42,7 +46,7 @@ export class Client {
             this.rest.post(Routes.Login, { email, password })
                 .then(response => {
                     if(response.type === "CONTENT") {
-                        if(typeof window === "undefined") localStorage.setItem("okapi_token", response.data as string)
+                        if(typeof window !== "undefined") localStorage.setItem("okapi_token", response.data as string)
                         this.checkToken()
                         resolve("logged in")
                     }
