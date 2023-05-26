@@ -1,5 +1,6 @@
 import { StringMappingType } from "typescript"
 import ContentManager from "./managers/ContentManager"
+import { UserManager } from "./managers/UserManager"
 import { Rest, Routes, SuccessResponse } from "./rest"
 
 const API_PATH: string = "https://staging.familyfriendly.xyz/api/"
@@ -19,10 +20,12 @@ type HostConfig = {
 export class Client {
     rest: Rest
     content: ContentManager
+    users: UserManager
 
     constructor() {
         this.rest = new Rest()
         this.content = new ContentManager(this)
+        this.users = new UserManager(this)
 
         this.checkToken()
     }

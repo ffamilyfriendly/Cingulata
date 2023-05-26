@@ -40,6 +40,54 @@ interface rawEntity {
     sources: rawSource[]
 }
 
+type MetaDataEdit = {
+    thumbnail?: string,
+    banner?: string,
+    description?: string,
+    name?: string,
+    rating?: number,
+    age_rating?: string,
+    language?: string,
+    year?: number
+}
+
+type SourceEdit = {
+    parent?: string,
+    path?: string,
+    position?: number
+}
+
+export class Source {
+    id: string
+    length: number
+    raw_parent: string
+    path: string
+    position: string
+
+    manager: ContentManager
+    constructor(data: rawSource, ContentManager: ContentManager) {
+        this.id = data.id
+        this.length = data.length
+        this.raw_parent = data.parent
+        this.path = data.path
+        this.position = data.position
+
+        this.manager = ContentManager
+    }
+
+    edit(data: SourceEdit) {
+        this.manager.editSource(this.id, data)
+    }
+
+    delete() {
+        return this.manager.deleteSource(this.id)
+    }
+
+    get parent(): Promise<Entity> {
+        return this.manager.get(this.raw_parent)
+    }
+}
+
 export class Metadata {
 
     thumbnail: string
@@ -67,6 +115,10 @@ export class Metadata {
         this.manager = ContentManager
     }
 
+    edit(data: MetaDataEdit) {
+        this.manager.editMetadata(this.raw_parent, data)
+    }
+
     delete() {
         this.manager.deleteMetadata(this.raw_parent)
     }
@@ -82,7 +134,7 @@ export class Entity {
     type: EntityTypes
     public: boolean
     position: number
-    sources: rawSource[]
+    sources: Source[]
     private next_id?: string
     private parent_id: string
     
@@ -94,7 +146,7 @@ export class Entity {
         this.type = EntityTypes[data.entity_type]
         this.public = !data.flag
         this.position = data.position
-        this.sources = []
+        this.sources = data.sources.map(source => new Source(source, ContentManager))
 
         this.next_id = data.next
         this.parent_id = data.parent
@@ -185,12 +237,19 @@ export default class ContentManager {
         return this.rest.delete(Routes.Entity(id))
     }
 
-    // TODO: impl this
-    editMetadata(id: string): Promise<SuccessResponse> {
-        return this.rest.get("")
+    editMetadata(id: string, data: MetaDataEdit): Promise<SuccessResponse> {
+        return this.rest.patch(Routes.MetaData(id), data)
     }
 
     deleteMetadata(id: string): Promise<SuccessResponse> {
         return this.rest.delete(Routes.MetaData(id))
+    }
+
+    editSource(id: string, data: SourceEdit) {
+        return this.rest.patch(Routes.Source(id), data)
+    }
+
+    deleteSource(id: string) {
+        return this.rest.delete(Routes.Source(id))
     }
 }

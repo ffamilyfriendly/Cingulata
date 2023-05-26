@@ -39,9 +39,11 @@ export const Routes = {
 
     LastWatched(entity: string) {
         return `/content/${entity}/lastwatched` as const
+    },
+
+    Source(id: string) {
+        return `/content/source/${id}` as const
     }
-
-
 
 
 }
