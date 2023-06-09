@@ -1,4 +1,5 @@
-const API_PATH: string = "https://staging.familyfriendly.xyz/api"
+//const API_PATH: string = "https://staging.familyfriendly.xyz/api"
+const API_PATH: string = "http://0.0.0.0:3001"
 
 export const Routes = {
 
@@ -13,7 +14,7 @@ export const Routes = {
     },
 
     MetaData(id: string) {
-        return `/content/id/metadata` as const
+        return `/content/${id}/metadata` as const
     },
 
     EntitySources(parent: string) {
@@ -98,6 +99,11 @@ export class Rest {
         if(body) opts.body = JSON.stringify(body)
 
         if(this.token && !opts.headers?.find(e => e[0] === "token")) opts.headers?.push(["token", this.token])
+
+        if(opts.body && method === "GET") {
+            console.warn(`[REST] tried making GET request with body.\npath: ${path}\nbody: ${opts.body}\nbody will be stripped before request is made`)
+            opts.body = null
+        }
 
         return new Promise((resolve, reject) => {
             fetch(`${API_PATH}${path}`, opts)

@@ -135,6 +135,7 @@ export class Entity {
     public: boolean
     position: number
     sources: Source[]
+    metadata?: Metadata
     private next_id?: string
     private parent_id: string
     
@@ -146,7 +147,8 @@ export class Entity {
         this.type = EntityTypes[data.entity_type]
         this.public = !data.flag
         this.position = data.position
-        this.sources = data.sources.map(source => new Source(source, ContentManager))
+        this.sources = data.sources ? data.sources.map(source => new Source(source, ContentManager)) : []
+        if(data.metadata) this.metadata = new Metadata(data.metadata, ContentManager)
 
         this.next_id = data.next
         this.parent_id = data.parent
@@ -194,6 +196,43 @@ export default class ContentManager {
         this.cache = new Map<string, Entity>()
     }
 
+    createEntity( data: { parent?: string, isPublic: boolean, type: EntityTypes, position?: number, next?: string } ): Promise<Entity> {
+        return new Promise((resolve, reject) => {
+            this.rest.post(Routes.Entity("entity"), { parent: data.parent, flag: Number(!data.isPublic), entity_type: EntityTypes[data.type] as string, position: data.position, next: data.next })
+                .then((c) => {
+                    if(c.type === "CONTENT" && typeof c.data === "string") resolve(this.get(c.data))
+                })
+                .catch(reject)
+        })
+    }
+
+    createMetadata( data: rawMetadata ): Promise<Entity> {
+        return new Promise((resolve, reject) => {
+            this.rest.post("/content/metadata", data)
+                .then(() => {
+                    const d = this.cache.get(data.parent)
+                    if(d) {
+                        d.metadata = new Metadata(data, this)
+                        resolve(d)
+                    } else {
+                        resolve(this.get(data.parent))
+                    }
+                })
+                .catch(reject)
+        })
+    }
+
+    createSource( data: rawSource ): Promise<Entity> {
+        return new Promise((resolve, reject) => {
+            this.rest.post("/content/source", data)
+                .then(() => {
+                    this.cache.delete(data.parent)
+                    resolve(this.get(data.parent))
+                })
+                .catch(resolve)
+        })
+    }
+
     get(id: string): Promise<Entity> {
         return new Promise((resolve, reject) => {
             if(this.cache.has(id)) {
@@ -202,7 +241,6 @@ export default class ContentManager {
             }
             this.rest.get(Routes.Entity(id))
                 .then(rawEntityData => {
-                    console.log(rawEntityData)
                     const entity = new Entity(rawEntityData.data as rawEntity, this)
                     this.cache.set(id, entity)
                     resolve(entity)
@@ -216,13 +254,8 @@ export default class ContentManager {
             this.rest.get(Routes.GetChildren(parent))
                 .then(rawEntities => {
                     if(!(rawEntities.data instanceof Array)) return
-                    const rv: Entity[] = rawEntities.data.map(rawEntityData => new Entity(rawEntityData, this))
-                    
-                    // Add entities to cache
-                    for(const e of rv)
-                        this.cache.set(e.id, e)
-
-                    resolve(rv)
+                    const promises: Promise<Entity>[] = rawEntities.data.map(entityId => this.get(entityId))
+                    resolve(Promise.all(promises))
                 })
         })
     }

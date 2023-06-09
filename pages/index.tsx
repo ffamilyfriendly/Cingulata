@@ -4,6 +4,9 @@ import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import Modal from '@/components/Modal'
 import { client } from './_app'
 import { EntityTypes } from '@/lib/api/managers/ContentManager'
+import Styling from "@/styles/pages/index.module.css"
+import Icon, { IconType } from '@/components/Icon'
+import Link from 'next/link'
 
 
 
@@ -15,13 +18,35 @@ function AidsModal(props: { show: Dispatch<SetStateAction<boolean>> }) {
   )
 }
 
+type DockItem = {
+  icon: IconType,
+  href: string,
+  label: string,
+  selected?: boolean
+}
+
+export function Dock( { items }: { items: DockItem[] } ) {
+
+  const [ selected, setSelected ] = useState("/")
+
+  return (
+    <nav role="navigation" aria-label="Navbar" className={Styling.nav}>
+      { items.map(i => <div className={`${Styling.nav_item} ${i.href === selected ? Styling.selected : ""}`}> <Link onClick={() => { setSelected(i.href) }} className={Styling.link_item} key={i.href} href={i.href}> <Icon className={Styling.icon} type={i.icon} /> <p className={Styling.label}>{i.label}</p> </Link></div>) }
+    </nav>
+  )
+}
+
+
 export default function Home() {
 
   const [ modal, showModal ] = useState(false)
   const [ disabled, setDisabled ] = useState(false)
 
   useEffect(() => {
-    const e = client.content.get("15533354474228222560")
+    client.content.getChildren("root")
+      .then(c => {
+        console.log(c)
+      })
   }, [])
 
   return (
@@ -33,10 +58,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        { modal ? <AidsModal show={showModal} /> : null }
-        <h1>Test</h1>
-        <p>right now the index page is just a testing zone for new components</p>
-        <Button icon="star" onclick={() => { showModal(!modal) }} style="primary">Click me</Button>
+        
       </main>
     </>
   )

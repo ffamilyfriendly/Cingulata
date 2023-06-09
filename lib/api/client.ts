@@ -8,7 +8,8 @@ const API_PATH: string = "https://staging.familyfriendly.xyz/api/"
 const decodeJWT = (text: string) => {
     const segs = text.split(".")
     if(segs.length !== 3) throw new Error("token formatting wrong")
-    return JSON.parse( atob( segs[1] ) )
+    const decodedToken: { exp: number, permissions: number, sub: string, uid: number } = JSON.parse( atob( segs[1] ) )
+    return decodedToken
 }
 
 type HostConfig = {
