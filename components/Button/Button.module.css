@@ -18,6 +18,10 @@
     position: relative;
 }
 
+.none {
+    padding: 0;
+}
+
 .disabled {
     cursor: not-allowed;
     --ctx_bg: gray;

@@ -1,14 +1,16 @@
 import { StringMappingType } from "typescript"
 import ContentManager from "./managers/ContentManager"
-import { UserManager } from "./managers/UserManager"
+import { User, UserManager } from "./managers/UserManager"
 import { Rest, Routes, SuccessResponse } from "./rest"
 
 const API_PATH: string = "https://staging.familyfriendly.xyz/api/"
 
+type decodedToken = { exp: number, permissions: number, sub: string, uid: number }
+
 const decodeJWT = (text: string) => {
     const segs = text.split(".")
     if(segs.length !== 3) throw new Error("token formatting wrong")
-    const decodedToken: { exp: number, permissions: number, sub: string, uid: number } = JSON.parse( atob( segs[1] ) )
+    const decodedToken: decodedToken = JSON.parse( atob( segs[1] ) )
     return decodedToken
 }
 
@@ -22,6 +24,8 @@ export class Client {
     rest: Rest
     content: ContentManager
     users: UserManager
+    user?: User
+
 
     constructor() {
         this.rest = new Rest()
@@ -37,12 +41,24 @@ export class Client {
         if(!token) return 
 
         try {
-            console.log(decodeJWT(token))
+            const decoded = decodeJWT(token)
+
+            this.user = new User({ perms: decoded.permissions, email: decoded.sub, uid: decoded.uid }, this.users)
             this.rest.setToken(token)
         } catch(err) {
             console.warn("failed to parse token")
             window.localStorage.removeItem("okapi_token")
         }
+    }
+
+    /**
+     * THIS FUNCTION DOES NOT ERASE THE SESSION
+     * all it does is clear the token from localStorage and resets some variables
+     */
+    logOut() {
+        localStorage.removeItem("okapi_token")
+        this.rest.setToken("")
+        delete this.user
     }
 
     login( email: string, password: string ): Promise<string> {

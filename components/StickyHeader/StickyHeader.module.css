@@ -1,0 +1,28 @@
+.StickyHeader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    --ctx_on_bg: var(--on_background);
+    width: 100%;
+    top: 0;
+    left: 0;
+    padding: 0.5rem;
+    transition: .4s;
+    z-index: 59;
+}
+
+.scrolled {
+    position: sticky;
+    backdrop-filter: blur(2px);
+    background-color: rgba(255, 255, 255, 0.053);
+}
+
+.link {
+    display: flex;
+    text-decoration: none;
+    color: var(--primary);
+    --ctx_on_bg: var(--primary);
+    position: absolute;
+    left: 0;
+    top: 0.5rem;
+}

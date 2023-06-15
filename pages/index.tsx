@@ -9,15 +9,6 @@ import Icon, { IconType } from '@/components/Icon'
 import Link from 'next/link'
 
 
-
-function AidsModal(props: { show: Dispatch<SetStateAction<boolean>> }) {
-  return (
-    <Modal onclose={() => { props.show(false) }} title="Aids Report">
-      Subject <b>Buster</b> has tested positibe for all kinds of aids
-    </Modal>
-  )
-}
-
 type DockItem = {
   icon: IconType,
   href: string,
@@ -27,11 +18,16 @@ type DockItem = {
 
 export function Dock( { items }: { items: DockItem[] } ) {
 
-  const [ selected, setSelected ] = useState("/")
+  const [ selected, setSelected ] = useState("")
+
+  useEffect(() => {
+    const path = window.location.pathname.split("/")
+    setSelected(`/${path[1]}`)
+  })
 
   return (
     <nav role="navigation" aria-label="Navbar" className={Styling.nav}>
-      { items.map(i => <div className={`${Styling.nav_item} ${i.href === selected ? Styling.selected : ""}`}> <Link onClick={() => { setSelected(i.href) }} className={Styling.link_item} key={i.href} href={i.href}> <Icon className={Styling.icon} type={i.icon} /> <p className={Styling.label}>{i.label}</p> </Link></div>) }
+      { items.map(i => <div key={i.label} className={`${Styling.nav_item} ${i.href === selected ? Styling.selected : ""}`}> <Link onClick={() => { setSelected(i.href) }} className={Styling.link_item} key={i.href} href={i.href}> <Icon className={Styling.icon} type={i.icon} /> <p className={Styling.label}>{i.label}</p> </Link></div>) }
     </nav>
   )
 }

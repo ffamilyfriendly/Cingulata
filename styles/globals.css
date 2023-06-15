@@ -44,6 +44,14 @@ body {
   gap: var(--ctx_gap);
 }
 
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh;
+}
+
 .spaced-row {
   display: flex;
   justify-content: space-between;

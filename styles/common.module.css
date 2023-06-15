@@ -11,6 +11,13 @@
     --ctx_gap: 1rem;
 }
 
+.centerHorizontal {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+}
+
 .surface {
     background-color: var(--surface);
     color: var(--on_surface);

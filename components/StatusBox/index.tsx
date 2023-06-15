@@ -1,10 +1,10 @@
 import { Dispatch, SetStateAction } from "react"
-import { Styles } from "../generic"
+import { GenericChildrenProp, Styles } from "../generic"
 import Icon, { IconType } from "../Icon"
 import style from "./Statusbox.module.css"
 
 interface StatusBoxProps {
-    children: any[]|null,
+    children: GenericChildrenProp,
     style: Styles,
     icon?: IconType,
     setDismiss?: Dispatch<SetStateAction<any | undefined>>,

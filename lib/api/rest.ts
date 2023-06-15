@@ -8,6 +8,26 @@ export const Routes = {
 
     Register: `/user` as const,
 
+    // USER base: /user
+
+    User(id: string) {
+        return `/user/${id}` as const
+    },
+
+    LogOut(id: string) {
+        return `/user/logout/${id}` as const
+    },
+
+    ClearSessions(id: number) {
+        return `/user/clearsessions/${id}`
+    },
+
+    UserPerms(id: string) {
+        return `/user/${id}/flag` as const
+    },
+
+    AllUsers: `/user/all` as const,
+
     // CONTENT
     Entity(id: string) {
         return `/content/${id}` as const

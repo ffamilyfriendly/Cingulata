@@ -11,12 +11,14 @@
     background: rgb(18,18,18);
     background: linear-gradient(0deg, rgba(18,18,18,1) 24%, rgba(18,18,18,0.2819328414959734) 100%); 
 
-    --ctx_on_bg: gray;
+    --ctx_on_bg: var(--primary);
+    backdrop-filter: blur(3px);
 }
 
 .nav_item {
     display: block;
     height: 100%;
+    filter: grayscale(1);
 }
 
 .link_item {
@@ -26,7 +28,7 @@
     align-items: center;
     text-decoration: none;
     gap: 0.2rem;
-    color: var(--on_background);
+    color: var(--primary);
 }
 
 .icon {
@@ -41,7 +43,7 @@
 }
 
 .selected {
-    --ctx_on_bg: white;
+    filter: none;
     animation: .3s selected;
 }
 
@@ -54,3 +56,29 @@
         transform: none;  
     }
 }
+
+@media (orientation: landscape) {
+    .nav {
+      height: 100%;
+      top: 0;
+      left: 0;
+      width: 4rem;
+      flex-direction: column;
+      float: left;
+      background-color: black;
+
+      opacity: 0.2;
+      transform: translateX(-50%);
+      transition: .3s;
+    }
+
+    .nav:hover {
+        opacity: 1;
+        transform: translateX(0%);
+    }
+
+    .nav_item {
+        width: 100%;
+        height: auto;
+    }
+  }
