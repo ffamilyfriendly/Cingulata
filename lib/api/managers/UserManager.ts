@@ -16,6 +16,10 @@ export function has_permission(p: number, permission: UserPermissions) {
     return (p & permission) == permission
 }
 
+export function set_permission(p: number, permission: UserPermissions) {
+    return p |= permission
+}
+
 export class User {
     permissions: number
     email: string
@@ -47,6 +51,10 @@ export class User {
 
     setPermissions(perms: number|UserPermissions[]) {
         return this.manager.setPermission(this.email, perms)
+    }
+
+    setPassword(oldPassword: string, newPassword: string) {
+        return this.manager.setPassword(this.id.toString(), oldPassword, newPassword)
     }
 }
 
@@ -85,6 +93,10 @@ export class UserManager {
         }
 
         return this.rest.patch(Routes.UserPerms(id), { flag })
+    }
+
+    setPassword(id: string, oldPassword: string, newPassword: string) {
+        return this.rest.patch(Routes.ChangePassword(id), { old_password: oldPassword, new_password: newPassword })
     }
 
     get users(): Promise<User[]> {

@@ -3,7 +3,7 @@ import { Result } from "../generic"
 import Icon, { IconType } from "../Icon"
 import styling from "./Input.module.css"
 
-type InputTypes = "color" | "date" | "email" | "file" | "checkbox" | "number" | "password" | "search" | "text"
+type InputTypes = "color" | "date" | "email" | "file" | "checkbox" | "number" | "password" | "search" | "text" | "toggle"
 
 
 
@@ -14,10 +14,10 @@ interface InputProps {
     type?: InputTypes,
     validate?: ( value: string ) => Result,
     setValue: Dispatch<SetStateAction<any | undefined>>,
-    value: string
+    value: string|number|boolean
 }
 
-export default function( { icon = "star", placeholder = "...", type = "text", ...rest }: InputProps ) {
+export default function( { icon, placeholder = "...", type = "text", ...rest }: InputProps ) {
 
     const [ validationError, setValidationError ] = useState<Result|null>()
 
@@ -36,10 +36,17 @@ export default function( { icon = "star", placeholder = "...", type = "text", ..
         <div className={styling.outer}>
             { rest.label ? <h3 className={styling.label}>{rest.label}</h3> : null }
             <div className={`${styling.container} ${(validationError ? styling.error : "")}`}>
-                <div className={styling.icon}>
-                    <Icon className={ validationError ? "error" : "info" } type={ icon } />
-                </div>
-                <input value={rest.value} onChange={validate} type={type} placeholder={placeholder} className={styling.input}></input>
+                { icon ? 
+                    <div className={styling.icon}>
+                        <Icon className={ validationError ? "error" : "info" } type={ icon } />
+                    </div> :
+                    null
+                }
+                { type == "toggle" ? 
+                    <h1>hi</h1>
+                    :
+                    <input value={typeof rest.value !== "boolean" ? rest.value : rest.value.toString()} onChange={validate} type={type} placeholder={placeholder} className={styling.input}></input>
+                }
                 { validationError ? <div className={styling.error_message}> <Icon type="error"></Icon> {validationError.message}</div> : null }
             </div>
         </div>

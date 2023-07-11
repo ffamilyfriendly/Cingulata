@@ -1,8 +1,9 @@
 .settings {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-rows: 100px repeat(auto-fill, 100px) 200px;
     width: 100%;
-    gap: 2rem;
+    gap: 3em;
 }
 
 .section {
@@ -11,8 +12,9 @@
     background-color: var(--surface);
     padding: 1rem;
     border-radius: 0.7rem;
-    width: 100%;
     gap: 1rem;
+    min-width: 50px;
+    height: fit-content;
 }
 
 .row {
@@ -20,7 +22,6 @@
     justify-content: space-between;
     --ctx_on_bg: var(--on_surface);
     color: var(--on_surface);
-    width: 100%;
     position: relative;
 }
 

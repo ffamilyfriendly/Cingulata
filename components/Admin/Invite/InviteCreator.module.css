@@ -1,0 +1,53 @@
+.row {
+    width: 100%;
+}
+
+.container {
+    width: 100%;
+}
+
+.toggleContainer {
+    width: 2.5em;
+    height: 1.25em;
+    background-color: gray;
+    border-radius: 0.5em;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+}
+
+.tip::before {
+    position: absolute;
+    left: -50%;
+    height: 1.25rem;
+    width: 2.5em;
+    content: "";
+    background-color: var(--primary);
+    z-index: 1;
+}
+
+.slider {
+    width: 100%;
+    background-color: var(--primary);
+    height: 100%;
+    border-radius: 0 50% 50% 0;
+    position: absolute;
+    left: calc(-100% + 1.25rem);
+    transition: .2s;
+}
+
+.toggled {
+    left: 0;
+}
+
+.slider::after {
+    content: "a";
+    height: 1.25em;
+    width: 1.25em;
+    display: block;
+    position: absolute;
+    right: 0;
+    border-radius: 50%;
+    background-color: white;
+}
+

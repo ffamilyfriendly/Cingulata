@@ -16,26 +16,30 @@ import Input from "@/components/Input"
 function ChangePassModal( props: { setShowModal: Dispatch<SetStateAction<Boolean>> } ) {
     const [ oldPass, setOldPass ] = useState<string>("")
     const [ newPass, setNewPass ] = useState<string>("")
+    const [ changePassPromise, setChangePassPromise ] = useState<Promise<any>|null>()
+    const [ statusBox, setStatusBox ] = useState<{ title: string, text: string, style: Styles }|null>()
 
-    const [ loginPromise, setLoginPromise ] = useState<Promise<any>|null>()
 
-    useEffect(() => {
-        const prom = new Promise((resolve, reject) => {
-            setTimeout(() => {
-                resolve(null)
-            }, 10000)
-        })
-        prom.then(() => { console.log("resolved!") })
-        console.log("set login promise")
-        setLoginPromise(prom)
-    }, [])
+    const changePassword = () => {
+        if(!client.user) return
+        const chngPassPromise = client.user.setPassword(oldPass, newPass)
+            .then(() => {
+                setStatusBox({ title: "Changed password!", text: "password was successfully changed", style: "success" })
+            })
+            .catch((e) => {
+                setStatusBox({ title: "could not change password", text: e, style: "error" })
+            })
+
+        setChangePassPromise(chngPassPromise)
+    }
 
     return (
         <Modal title="change password" onclose={() => { props.setShowModal(false) }}>
-            <div className="stack">
+            <div className="stack gap-medium">
+                { statusBox ? <StatusBox style={statusBox.style} icon={ statusBox.style === "error" ? "error" : "info" } title={statusBox.title}>{statusBox.text}</StatusBox> : null }
                 <Input label="Old Password" icon="password" type="password" setValue={setOldPass} value={oldPass}></Input>
-                <Input label="New Password" icon="password" type="password" setValue={setNewPass} value={newPass}></Input>
-                <Button disabled={false} width="full" style="primary" loadWithPromise={loginPromise}>aids</Button>
+                <Input validate={( str ) => { return { ok: str !== oldPass, message: "your new password cannot be the same as your old" } } } label="New Password" icon="password" type="password" setValue={setNewPass} value={newPass}></Input>
+                <Button disabled={ !oldPass || !newPass } width="full" style="primary" loadWithPromise={changePassPromise} onclick={changePassword}>Change Password</Button>
             </div>
         </Modal>
     )

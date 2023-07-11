@@ -14,6 +14,10 @@ export const Routes = {
         return `/user/${id}` as const
     },
 
+    ChangePassword(id: string) {
+        return `/user/${id}/password` as const
+    },
+
     LogOut(id: string) {
         return `/user/logout/${id}` as const
     },
@@ -64,7 +68,11 @@ export const Routes = {
 
     Source(id: string) {
         return `/content/source/${id}` as const
-    }
+    },
+
+    // INVITES
+
+    NewInvite: "/invite/" as const
 
 
 }
@@ -97,9 +105,10 @@ export type FailResponse = {
 }
 
 type SuccessTypes = "CONTENT"|"NO-CONTENT"
-export type SuccessResponse = {
+type defaultSuccessResponseType = Object|string
+export type SuccessResponse<ResponseType = defaultSuccessResponseType> = {
     type: SuccessTypes,
-    data?: Object|string
+    data?: ResponseType
 }
 
 export class Rest {
@@ -113,7 +122,7 @@ export class Rest {
         this.token = token
     }
 
-    private req(path: string, method: HTTPOptions, body?: Object|null, options: FetchOptions = {}): Promise<SuccessResponse> {
+    private req<ResponseType>(path: string, method: HTTPOptions, body?: Object|null, options: FetchOptions = {}): Promise<SuccessResponse<ResponseType>> {
         let opts: FetchOptions = Object.assign(defaultOptions, options)
         opts.method = method
         if(body) opts.body = JSON.stringify(body)
@@ -144,19 +153,19 @@ export class Rest {
         })
     }
 
-    get(path: string) {
-        return this.req(path, "GET")
+    get<T = defaultSuccessResponseType>(path: string) {
+        return this.req<T>(path, "GET")
     }
 
-    delete(path: string) {
-        return this.req(path, "DELETE")
+    delete<T = defaultSuccessResponseType>(path: string) {
+        return this.req<T>(path, "DELETE")
     }
 
-    post(path: string, data: Object) {
-        return this.req(path, "POST", data)
+    post<T = defaultSuccessResponseType>(path: string, data: Object) {
+        return this.req<T>(path, "POST", data)
     }
 
-    patch(path: string, data: Object) {
-        return this.req(path, "PATCH", data)
+    patch<T = defaultSuccessResponseType>(path: string, data: Object) {
+        return this.req<T>(path, "PATCH", data)
     }
 }

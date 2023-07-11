@@ -1,5 +1,6 @@
 import { StringMappingType } from "typescript"
 import ContentManager from "./managers/ContentManager"
+import { InviteManager } from "./managers/InviteManager"
 import { User, UserManager } from "./managers/UserManager"
 import { Rest, Routes, SuccessResponse } from "./rest"
 
@@ -24,6 +25,7 @@ export class Client {
     rest: Rest
     content: ContentManager
     users: UserManager
+    invites: InviteManager
     user?: User
 
 
@@ -31,6 +33,7 @@ export class Client {
         this.rest = new Rest()
         this.content = new ContentManager(this)
         this.users = new UserManager(this)
+        this.invites = new InviteManager(this)
 
         this.checkToken()
     }

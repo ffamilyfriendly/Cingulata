@@ -17,7 +17,6 @@ interface ButtonProps {
 
 function ButtonIcon( props: { icon: IconType, loading: boolean } ) {
     const iconName: IconType = props.loading ? "loading" : props.icon
-    console.log(iconName)
     return (
         <Icon className={ iconName === "loading" ? styling.icon_loading : "" } type={ iconName } />
     )

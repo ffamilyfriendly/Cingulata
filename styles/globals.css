@@ -37,6 +37,18 @@ body {
   color: var(--on_background);
 }
 
+.gap-small {
+  --ctx_gap: 0.2em;
+}
+
+.gap-medium {
+  --ctx_gap: 0.5em;
+}
+
+.gap-large {
+  --ctx_gap: 1em;
+}
+
 .stack {
   display: inline-flex;
   flex-direction: column;

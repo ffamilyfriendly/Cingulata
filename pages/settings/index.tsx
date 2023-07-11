@@ -8,12 +8,15 @@ import Styling from "@/styles/pages/settings.module.css"
 import Icon, { IconType } from '@/components/Icon'
 import Link from 'next/link'
 import { GenericChildrenProp } from '@/components/generic'
+import Modal from '@/components/Modal'
+import InviteCreator from '@/components/Admin/Invite/InviteCreator'
 
 type SettingsPropsRow = { icon: IconType, label: string, onClick?: Function, href?: string }
 interface SettingsProps {
-  rows: SettingsPropsRow[]
+  rows: SettingsPropsRow[],
+  label?: String
 }
-export function SettingsSection( { rows }: SettingsProps ) {
+export function SettingsSection( { rows, label }: SettingsProps ) {
 
   function ActionIcon( props: SettingsPropsRow ): GenericChildrenProp {
     if(props.href) {
@@ -38,8 +41,9 @@ export function SettingsSection( { rows }: SettingsProps ) {
 
   return (
     <div className={Styling.section}>
+      { label ? <h3>{ label }</h3> : null }
       { rows.map( r =>
-        <div className={Styling.row}>
+        <div key={ r.label } className={Styling.row}>
           <div className={Styling.meta}>
             <Icon type={r.icon} />
             <p>{r.label}</p>
@@ -51,7 +55,7 @@ export function SettingsSection( { rows }: SettingsProps ) {
   )
 }
 
-function HelloUser() {
+function UserSettings() {
 
   const [ user, setUser ] = useState<User>()
 
@@ -61,12 +65,38 @@ function HelloUser() {
 
   return (
     <>
-      <SettingsSection rows={[
+      <SettingsSection label="User" rows={[
         (user ? { icon: "user", label: user.email, href: "/settings/user" } : { icon: "user", label: "Log in", href: "/auth/login" }),
         { icon: "cog", label: "Local Settings", href: "/settings/local" }
         
       ]} />
+      
     </>
+  )
+}
+
+function ContentSettings() {
+  return (
+    <AuthedComponent requires={UserPermissions.ManageContent}>
+      <SettingsSection label="Content" rows={[
+        { icon: "plus", label: "new" },
+        { icon:"list", label: "show all", href: "/settings/content/" }
+      ]} />
+    </AuthedComponent>
+  )
+}
+
+function InviteSettings() {
+  const [ inviteModal, setInviteModal ] = useState(false)
+
+  return (
+    <AuthedComponent requires={UserPermissions.GenerateInvite}>
+      <>{ inviteModal ? <Modal title='Create Invite' onclose={() => { setInviteModal(false) }}><InviteCreator /></Modal> : null }</>
+      <SettingsSection label="Invites" rows={[
+        { icon: "plus", label: "new", onClick: () => { setInviteModal(true) } },
+        { icon: "list", label: "manage existing" }
+      ]} />
+    </AuthedComponent>
   )
 }
 
@@ -76,7 +106,9 @@ export default function Home() {
     <>
         <main className={`${GenericStyles.centerHorizontal} ${GenericStyles.container}`}>
           <div className={Styling.settings}>
-            <HelloUser />
+            <UserSettings />
+            <ContentSettings />
+            <InviteSettings />
           </div>
         </main>
     </>
