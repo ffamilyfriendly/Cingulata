@@ -36,23 +36,20 @@ export default function Login() {
 
     const [ email, setEmail ] = useState<string>()
     const [ password, setPassword ] = useState<string>()
-    const [ loading, setLoading ] = useState(false)
+    const [ loading, setLoading ] = useState<Promise<any>|null>()
     const [ error, setError ] = useState<{ label: string, text: string }>()
 
     const onClick = useCallback(async () => {
         if(!email || !password) return
 
-        setLoading(true)
-        client.login(email, password)
+        const loginPromise = client.login(email, password)
         .then(() => {
-            console.log("logged in")
-            setLoading(false)
             push("/")
         })
         .catch((e: FailResponse) => {
             setError({ label: e.type, text: e.displayText })
-            setLoading(false)
         })
+        setLoading(loginPromise)
     }, [ loading, email, password ])
 
     return (
@@ -61,7 +58,7 @@ export default function Login() {
                 <h1 style={{ "textAlign": "center" }}>Sign In</h1>
 
                 { error ?
-                    <StatusBox title={`${error.label} error`} icon="error" style="error"> {error.text} </StatusBox>:
+                    <StatusBox title={`${error.label} error`} icon="error" style="error">{error.text}</StatusBox>:
                     null
                 }
 
@@ -70,7 +67,7 @@ export default function Login() {
                         <Input setValue={setEmail} value={email as string} label="Email" icon="user" placeholder="Email" validate={validateEmail}></Input>
                         <Input setValue={setPassword} value={password as string} label="Password" icon="password" type="password" placeholder="Password" validate={validatePassword}></Input>
 
-                        <Button loading={loading} onclick={onClick} disabled={false} style="primary" width="full">
+                        <Button loadWithPromise={loading} onclick={onClick} disabled={false} style="primary" width="full">
                         Login
                         </Button>
                         <Button onclick="/auth/register" style="tertiary" width="wide">

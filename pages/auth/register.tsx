@@ -49,7 +49,7 @@ export default function Register() {
     const [ password, setPassword ] = useState<string>()
     const [ invite, setInvite ] = useState<string>()
 
-    const [ loading, setLoading ] = useState(false)
+    const [ loading, setLoading ] = useState<Promise<any>|null>()
     const [ inviteOnly, setInviteOnly ] = useState<boolean|undefined>()
     const [ error, setError ] = useState<{ label: string, text: string }>()
 
@@ -57,16 +57,15 @@ export default function Register() {
         if(!email || !password) return
         if(inviteOnly && !invite) return
 
-        setLoading(true)
-        client.register(email, password, invite)
+        
+        const registerPromise = client.register(email, password, invite)
         .then(() => {
-            setLoading(false)
             push("/auth/login")
         })
         .catch((e: FailResponse) => {
             setError({ label: e.type, text: e.displayText })
-            setLoading(false)
         })
+        setLoading(registerPromise)
     }, [ loading, email, password ])
 
     useEffect(() => {
@@ -88,11 +87,11 @@ export default function Register() {
                 <h1 style={{ "textAlign": "center" }}>Create Account</h1>
 
                 <div className={ typeof inviteOnly == "undefined" ? styles.skeleton : ""}>
-                    <StatusBox title={ inviteOnly ? "invite only" : "Public instance"} icon="info" style="info"> <p>{ inviteOnly ? "This instance is invite only" : "This instance is public" }</p> </StatusBox>
+                    <StatusBox title={ inviteOnly ? "invite only" : "Public instance"} icon="info" style="info"><p>{ inviteOnly ? "an invite is required for this instance" : "This instance is public" }</p></StatusBox>
                 </div>
 
                 { error ?
-                    <StatusBox title={`${error.label} error`} icon="error" style="error"> {error.text} </StatusBox>:
+                    <StatusBox title={`${error.label} error`} icon="error" style="error">{error.text}</StatusBox>:
                     null
                 }
 
@@ -102,7 +101,7 @@ export default function Register() {
                         <Input setValue={setPassword} value={password as string} label="Password" icon="password" type="password" placeholder="Password" validate={validatePassword}></Input>
                         <Input setValue={setInvite} value={invite as string} label="Invite" icon="ticket" placeholder="invite" validate={validateInvite}></Input>
 
-                        <Button loading={loading} onclick={onClick} disabled={false} style="primary" width="full">
+                        <Button loadWithPromise={loading} onclick={onClick} disabled={false} style="primary" width="full">
                         Register
                         </Button>
                         <Button onclick="/auth/login" style="tertiary" width="wide">

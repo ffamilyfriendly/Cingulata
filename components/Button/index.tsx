@@ -11,26 +11,47 @@ interface ButtonProps {
     disabled?: boolean,
     onclick?: Function|string,
     icon?: IconType,
-    loading?: boolean
+    loading?: boolean,
+    loadWithPromise?: Promise<any>|Promise<any>[]|null
+}
+
+function ButtonIcon( props: { icon: IconType, loading: boolean } ) {
+    const iconName: IconType = props.loading ? "loading" : props.icon
+    console.log(iconName)
+    return (
+        <Icon className={ iconName === "loading" ? styling.icon_loading : "" } type={ iconName } />
+    )
 }
 
 export default function Button({ style, children, disabled = false, width, icon, ...props }: ButtonProps) {
 
     const { push } = useRouter()
+    const [ loading, setLoading ] = useState(false)
 
     const handleOnClick = ( event: MouseEvent<HTMLButtonElement> ) => {
-        if(disabled) return event.preventDefault()
+        if(disabled||loading) return event.preventDefault()
         if(!props.onclick) return
 
         if(typeof props.onclick === "string") push(props.onclick)
         else props.onclick(event)
-
     }
-    if(props.loading) icon = "loading"
+
+    useEffect(() => {
+        if(props.loading) {
+            setLoading(true)
+        }
+        if(props.loadWithPromise) {
+            setLoading(true)
+            Promise.all( props.loadWithPromise instanceof Array ? props.loadWithPromise : [ props.loadWithPromise ] )
+                .then(() => {
+                    setLoading(false)
+                })
+        }
+    }, [props.loadWithPromise])
 
     return (
-        <button onClick={handleOnClick} className={ styling.button + ` ${style} ${width ? styling[width] : ""} ${disabled ? styling.disabled : ""} ${ props.loading ? styling.loading : "" }` }>
-            { icon ? <Icon className={ icon === "loading" ? styling.icon_loading : "" } type={icon} /> : null }
+        <button onClick={handleOnClick} className={ styling.button + ` ${style} ${width ? styling[width] : ""} ${disabled || loading ? styling.disabled : ""} ${ props.loading ? styling.loading : "" }` }>
+            { icon || loading ? <ButtonIcon icon={ icon||"star" } loading={loading} /> : null }
             <p>{ children }</p>
         </button>
     )

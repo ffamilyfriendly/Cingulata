@@ -8,7 +8,6 @@ import Styling from "@/styles/pages/settings.module.css"
 import Icon, { IconType } from '@/components/Icon'
 import Link from 'next/link'
 import { GenericChildrenProp } from '@/components/generic'
-import Button from '@/components/Button'
 
 type SettingsPropsRow = { icon: IconType, label: string, onClick?: Function, href?: string }
 interface SettingsProps {
