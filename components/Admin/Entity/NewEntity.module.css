@@ -1,0 +1,23 @@
+.container {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    gap: 0.5rem;
+}
+
+.type {
+    background-color: rgba(128, 128, 128, 0.20);
+    border-radius: .2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    --ctx_on_bg: var(--secondary);
+    width: 4rem;
+    height: 4rem;
+    cursor: pointer;
+}
+
+.selected {
+    --ctx_on_bg: var(--primary);
+    outline: 1px solid var(--primary);
+}

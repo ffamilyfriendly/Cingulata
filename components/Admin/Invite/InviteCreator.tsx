@@ -10,7 +10,7 @@ import { Styles } from "@/components/generic";
 import StatusBox from "@/components/StatusBox";
 import AuthedComponent from "@/components/AuthedComponent";
 
-function ToggleRow( props: { label: string, toggled?: boolean, onClick: Function } ) {
+export function ToggleRow( props: { label: string, toggled?: boolean, onClick: Function } ) {
 
     const [ toggled, setToggled ] = useState<Boolean>(!!props.toggled)
 

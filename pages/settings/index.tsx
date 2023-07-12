@@ -10,6 +10,7 @@ import Link from 'next/link'
 import { GenericChildrenProp } from '@/components/generic'
 import Modal from '@/components/Modal'
 import InviteCreator from '@/components/Admin/Invite/InviteCreator'
+import NewEntity from '@/components/Admin/Entity/NewEntity'
 
 type SettingsPropsRow = { icon: IconType, label: string, onClick?: Function, href?: string }
 interface SettingsProps {
@@ -76,10 +77,13 @@ function UserSettings() {
 }
 
 function ContentSettings() {
+  const [ modal, setModal ] = useState(false)
+
   return (
     <AuthedComponent requires={UserPermissions.ManageContent}>
+      <>{ modal ? <NewEntity /> : null }</>
       <SettingsSection label="Content" rows={[
-        { icon: "plus", label: "new" },
+        { icon: "plus", label: "new", onClick: () => { setModal(true) } },
         { icon:"list", label: "show all", href: "/settings/content/" }
       ]} />
     </AuthedComponent>
