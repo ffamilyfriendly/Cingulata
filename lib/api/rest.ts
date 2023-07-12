@@ -37,6 +37,10 @@ export const Routes = {
         return `/content/${id}` as const
     },
 
+    EditEntity(id: string) {
+        return `/content/entity/${id}` as const
+    },
+
     MetaData(id: string) {
         return `/content/${id}/metadata` as const
     },
@@ -69,6 +73,8 @@ export const Routes = {
     Source(id: string) {
         return `/content/source/${id}` as const
     },
+
+
 
     // INVITES
 

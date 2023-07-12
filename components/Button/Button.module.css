@@ -24,8 +24,8 @@
 
 .disabled {
     cursor: not-allowed;
-    --ctx_bg: gray;
-    --ctx_on_bg: white;
+    --ctx_bg: gray !important;
+    --ctx_on_bg: white !important;
 }
 
 .wide {

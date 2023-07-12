@@ -49,7 +49,7 @@ export default function Button({ style, children, disabled = false, width, icon,
     }, [props.loadWithPromise])
 
     return (
-        <button onClick={handleOnClick} className={ styling.button + ` ${style} ${width ? styling[width] : ""} ${disabled || loading ? styling.disabled : ""} ${ props.loading ? styling.loading : "" }` }>
+        <button onClick={handleOnClick} className={ styling.button + ` ${style} ${width ? styling[width] : ""} ${(disabled || loading) ? styling.disabled : ""} ${ props.loading ? styling.loading : "" }` }>
             { icon || loading ? <ButtonIcon icon={ icon||"star" } loading={loading} /> : null }
             <p>{ children }</p>
         </button>

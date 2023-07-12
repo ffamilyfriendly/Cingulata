@@ -1,6 +1,5 @@
 import Input from "@/components/Input";
-import { has_permission, set_permission, UserPermissions } from "@/lib/api/managers/UserManager";
-import { SettingsSection } from "@/pages/settings";
+import { set_permission, UserPermissions } from "@/lib/api/managers/UserManager";
 import inputStyle from "@/components/Input/Input.module.css"
 import style from "./InviteCreator.module.css"
 import { useState } from "react";

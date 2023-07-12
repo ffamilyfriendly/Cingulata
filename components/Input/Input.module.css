@@ -4,7 +4,7 @@
 
 .container {
     --ctx_on_bg: white;
-    background-color: rgba(255, 255, 255, 0.211);
+    background-color: var(--lifted);
     display: flex;
     border-radius: 0.2rem;
     padding: 0.33rem;

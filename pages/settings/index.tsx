@@ -81,10 +81,10 @@ function ContentSettings() {
 
   return (
     <AuthedComponent requires={UserPermissions.ManageContent}>
-      <>{ modal ? <NewEntity /> : null }</>
+      <>{ modal ? <NewEntity onClose={() => { setModal(false) }} /> : null }</>
       <SettingsSection label="Content" rows={[
         { icon: "plus", label: "new", onClick: () => { setModal(true) } },
-        { icon:"list", label: "show all", href: "/settings/content/" }
+        { icon:"list", label: "manage existing", href: "/settings/content/" }
       ]} />
     </AuthedComponent>
   )

@@ -136,8 +136,8 @@ export class Entity {
     position: number
     sources: Source[]
     metadata?: Metadata
-    private next_id?: string
-    private parent_id: string
+    next_id?: string
+    parent_id: string
     
     manager: ContentManager
 
@@ -233,9 +233,9 @@ export default class ContentManager {
         })
     }
 
-    get(id: string): Promise<Entity> {
+    get(id: string, bypassCache: boolean = false): Promise<Entity> {
         return new Promise((resolve, reject) => {
-            if(this.cache.has(id)) {
+            if(this.cache.has(id) && !bypassCache) {
                 console.log("cache bounce")
                 return this.cache.get(id)
             }
@@ -262,7 +262,7 @@ export default class ContentManager {
 
     editEntity(id: string, data: { parent?: string, flag?: number, position?: number, next?: string }): Promise<SuccessResponse> {
         this.cache.delete(id)
-        return this.rest.patch(Routes.Entity(id), data)
+        return this.rest.patch(Routes.EditEntity(id), data)
     }
 
     deleteEntity(id: string): Promise<SuccessResponse> {

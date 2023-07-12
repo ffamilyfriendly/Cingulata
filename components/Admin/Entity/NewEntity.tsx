@@ -1,8 +1,9 @@
 import Button from "@/components/Button"
 import Icon, { IconType } from "@/components/Icon"
 import Modal from "@/components/Modal"
-import { EntityTypes } from "@/lib/api/managers/ContentManager"
+import { Entity, EntityTypes } from "@/lib/api/managers/ContentManager"
 import { client } from "@/pages/_app"
+import { useRouter } from "next/router"
 import { useState } from "react"
 import { ToggleRow } from "../Invite/InviteCreator"
 import style from "./NewEntity.module.css"
@@ -29,19 +30,36 @@ function EntitySelector( props: { selected: EntityTypes, onChange: Function } ) 
     )
 }
 
-export default function NewEntity() {
+export default function NewEntity( props: { onClose: Function } ) {
 
     const [ type, setType ] = useState<EntityTypes>(EntityTypes.Category)
     const [ entPublic, setPublic ] = useState(false)
     const [ promise, setPromise ] = useState<Promise<any>|null>()
+    const [ entity, setEntity ] = useState<Entity | null>()
 
     const createEntity = () => {
-        const creationPromise = client.content.createEntity({ type, isPublic: entPublic })
-        setPromise(creationPromise)
+        const createEntityWithMetadata = (): Promise<Entity> => {
+            return new Promise((resolve, reject) => {
+                client.content.createEntity({ type, isPublic: entPublic })
+                .then(ent => {
+                    client.content.createMetadata({ thumbnail: "", banner: "", description: "", name: "", rating: 0, age_rating: "", language: "", year: 1984, parent: ent.id })
+                        .then((ent) => {
+                            resolve(ent)
+                        })
+                        .catch(reject)
+                })
+                .catch(reject)
+            })
+        }
+
+        const entityCreator = createEntityWithMetadata()
+            .then(ent => setEntity(ent))
+
+        setPromise(entityCreator)
     }
 
     return (
-        <Modal title="New Entity" onclose={() => {}}>
+        <Modal title="New Entity" onclose={() => { props.onClose() }}>
             <section className="stack gap-medium">
                 <h3>Entity Type</h3>
                 <EntitySelector onChange={( t: EntityTypes ) => { setType(t) }} selected={ type } />
@@ -54,7 +72,7 @@ export default function NewEntity() {
                     <small>private content can only be accessed by signed in users</small>
                 }
 
-                <Button loadWithPromise={promise} onclick={createEntity} icon="plus" style="primary" width="full">{`Create ${EntityTypes[type]}`}</Button>
+                <Button loadWithPromise={promise} onclick={ entity ? `/settings/content/${entity.id}` : createEntity} icon={ entity ? "cog" : "plus" } style={ entity ? "success" : "primary" } width="full">{entity ? "Edit" : `Create ${EntityTypes[type]}`}</Button>
             </section>
         </Modal>
     )
