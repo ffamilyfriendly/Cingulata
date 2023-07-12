@@ -5,7 +5,7 @@ import GenericStyles from "@/styles/common.module.css"
 import { SettingsSection } from ".."
 import SettingsStyle from "@/styles/pages/settings.module.css"
 import Button from "@/components/Button"
-import { Dispatch, SetStateAction, useEffect, useState } from "react"
+import { Dispatch, SetStateAction, useState } from "react"
 import { SuccessResponse } from "@/lib/api/rest"
 import { client } from "@/pages/_app"
 import StatusBox from "@/components/StatusBox"
@@ -27,7 +27,7 @@ function ChangePassModal( props: { setShowModal: Dispatch<SetStateAction<Boolean
                 setStatusBox({ title: "Changed password!", text: "password was successfully changed", style: "success" })
             })
             .catch((e) => {
-                setStatusBox({ title: "could not change password", text: e, style: "error" })
+                setStatusBox({ title: "could not change password", text: e.message, style: "error" })
             })
 
         setChangePassPromise(chngPassPromise)

@@ -94,7 +94,7 @@ function InviteSettings() {
       <>{ inviteModal ? <Modal title='Create Invite' onclose={() => { setInviteModal(false) }}><InviteCreator /></Modal> : null }</>
       <SettingsSection label="Invites" rows={[
         { icon: "plus", label: "new", onClick: () => { setInviteModal(true) } },
-        { icon: "list", label: "manage existing" }
+        { icon: "list", label: "manage existing", href: "/settings/invites" }
       ]} />
     </AuthedComponent>
   )

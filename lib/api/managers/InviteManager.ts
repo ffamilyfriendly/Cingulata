@@ -20,6 +20,10 @@ export class Invite {
         this.expires = new Date(data.expires)
         this.uses = data.uses
     }
+
+    delete() {
+        return this.manager.deleteInvite(this.id)
+    }
 }
 
 type SuccesfullInviteResponse = { url: string }
@@ -30,7 +34,19 @@ export class InviteManager {
         this.rest = client.rest
     }
 
-    createInvite( data: { user_flag?: number, expires?: number, uses?: number } ) {
+    createInvite( data: { user_flag?: number|null, expires?: number|null, uses?: number|null } ) {
         return this.rest.post<SuccesfullInviteResponse>(Routes.NewInvite, data)
+    }
+
+    deleteInvite( id: string ) {
+        return this.rest.delete(Routes.Invite(id))
+    }
+
+    get invites(): Promise<Invite[]> {
+        return new Promise((resolve, reject) => {
+            this.rest.get<rawInviteData[]>(Routes.AllInvites)
+                .then(data => resolve( data.data ? data.data.map(inv => new Invite(this, inv)) : [] ))
+                .catch(reject)
+        })
     }
 }

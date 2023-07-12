@@ -72,7 +72,13 @@ export const Routes = {
 
     // INVITES
 
-    NewInvite: "/invite/" as const
+    NewInvite: "/invite/" as const,
+
+    AllInvites: "/invite/all/all" as const,
+
+    Invite(id: string) {
+        return `/invite/${id}` as const
+    }
 
 
 }

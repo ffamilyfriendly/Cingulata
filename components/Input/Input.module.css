@@ -21,7 +21,7 @@
     background-color: transparent;
     font-size: 1rem;
     padding: 0.2rem;
-    color: white;
+    color: var(--ctx_on_bg);
 }
 
 .icon {
@@ -32,11 +32,15 @@
 }
 
 .error_message {
-    position: absolute;
-    bottom: -1.1rem;
+    padding: 0.5rem 0.5rem 0 0rem;
     font-size: 0.8rem;
     display: flex;
     --ctx_on_bg: var(--error);
     color: var(--error);
     gap: 0.2rem;
+}
+
+.disabled {
+    cursor: not-allowed;
+    --ctx_on_bg: gray;
 }

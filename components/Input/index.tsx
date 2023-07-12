@@ -14,7 +14,8 @@ interface InputProps {
     type?: InputTypes,
     validate?: ( value: string ) => Result,
     setValue: Dispatch<SetStateAction<any | undefined>>,
-    value: string|number|boolean
+    value: string|number|boolean,
+    disabled?: boolean
 }
 
 export default function( { icon, placeholder = "...", type = "text", ...rest }: InputProps ) {
@@ -22,7 +23,9 @@ export default function( { icon, placeholder = "...", type = "text", ...rest }: 
     const [ validationError, setValidationError ] = useState<Result|null>()
 
     const validate = ( event: ChangeEvent<HTMLInputElement> ) => {
+        if(rest.disabled) return
         rest.setValue(event.target.value)
+
         if(!rest.validate || event.target.value.trim().length === 0) return
         const res = rest.validate( event.target.value )
         
@@ -35,7 +38,7 @@ export default function( { icon, placeholder = "...", type = "text", ...rest }: 
     return (
         <div className={styling.outer}>
             { rest.label ? <h3 className={styling.label}>{rest.label}</h3> : null }
-            <div className={`${styling.container} ${(validationError ? styling.error : "")}`}>
+            <div className={`${styling.container} ${(validationError ? styling.error : "")} ${ rest.disabled ? styling.disabled : "" }`}>
                 { icon ? 
                     <div className={styling.icon}>
                         <Icon className={ validationError ? "error" : "info" } type={ icon } />
@@ -45,10 +48,11 @@ export default function( { icon, placeholder = "...", type = "text", ...rest }: 
                 { type == "toggle" ? 
                     <h1>hi</h1>
                     :
-                    <input value={typeof rest.value !== "boolean" ? rest.value : rest.value.toString()} onChange={validate} type={type} placeholder={placeholder} className={styling.input}></input>
+                    <input disabled={rest.disabled} value={typeof rest.value !== "boolean" ? rest.value : rest.value.toString()} onChange={validate} type={type} placeholder={placeholder} className={styling.input}></input>
                 }
-                { validationError ? <div className={styling.error_message}> <Icon type="error"></Icon> {validationError.message}</div> : null }
+                
             </div>
+            { validationError ? <div className={styling.error_message}> <Icon type="error"></Icon> {validationError.message}</div> : null }
         </div>
     )
 }
