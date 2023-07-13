@@ -32,6 +32,9 @@
 
   --tertiary: transparent;
   --on_tertiary: white;
+
+  /* BREAKPOINTS */
+  --breakpoint-tablet: 750px;
 }
 
 body {

@@ -45,6 +45,10 @@ export const Routes = {
         return `/content/${id}/metadata` as const
     },
 
+    EditMetaData(id: string) {
+        return `/content/metadata/${id}` as const
+    },
+
     EntitySources(parent: string) {
         return `/content/${parent}/sources` as const
     },

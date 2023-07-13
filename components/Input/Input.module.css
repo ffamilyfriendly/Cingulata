@@ -24,6 +24,26 @@
     color: var(--ctx_on_bg);
 }
 
+.textarea {
+    border: none;
+    resize: none;
+    width: 100%;
+    background-color: transparent;
+    color: var(--ctx_on_bg);
+    padding: 0.2rem;
+}
+
+.select {
+    background-color: transparent;
+    color: var(--on-background);
+    border: none;
+    padding: 0.5em;
+    font-size: 1rem;
+    border-radius: 0.2rem;
+    display: block;
+    width: 100%;
+}
+
 .icon {
     display: flex;
     justify-content: center;

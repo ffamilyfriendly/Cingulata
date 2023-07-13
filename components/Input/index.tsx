@@ -1,9 +1,9 @@
-import { ChangeEvent, Dispatch, SetStateAction, useState } from "react"
+import { ChangeEvent, Dispatch, SetStateAction, useRef, useState } from "react"
 import { Result } from "../generic"
 import Icon, { IconType } from "../Icon"
 import styling from "./Input.module.css"
 
-type InputTypes = "color" | "date" | "email" | "file" | "checkbox" | "number" | "password" | "search" | "text" | "toggle"
+type InputTypes = "color" | "date" | "email" | "file" | "checkbox" | "number" | "password" | "search" | "text" | "textbox" | "select" | "image"
 
 
 
@@ -15,14 +15,37 @@ interface InputProps {
     validate?: ( value: string ) => Result,
     setValue: Dispatch<SetStateAction<any | undefined>>,
     value: string|number|boolean,
-    disabled?: boolean
+    disabled?: boolean,
+    selectOptions?: { value: string, display: string }[]
+}
+
+interface InputElementProps extends InputProps {
+    validateFunc( event: ChangeEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement> ): void
+}
+
+function InputElement( props: InputElementProps ) {
+    switch (props.type) {
+        case "textbox":
+            return <textarea disabled={props.disabled} value={ props.value.toString() } onChange={props.validateFunc} placeholder={props.placeholder} className={styling.textarea}></textarea>
+        break;
+        case "select":
+            return (
+                <select value={ props.value.toString() } onChange={props.validateFunc} className={ styling.select }>
+                    { props.selectOptions?.map(c => <option key={ c.value } value={ c.value }>{ c.display }</option> ) }
+                </select>
+            )
+        break;
+        default:
+            return <input disabled={props.disabled} value={typeof props.value !== "boolean" ? props.value : props.value.toString()} onChange={props.validateFunc} type={props.type} placeholder={props. placeholder} className={styling.input}></input>
+        break;
+    }
 }
 
 export default function( { icon, placeholder = "...", type = "text", ...rest }: InputProps ) {
 
     const [ validationError, setValidationError ] = useState<Result|null>()
 
-    const validate = ( event: ChangeEvent<HTMLInputElement> ) => {
+    const validate = ( event: ChangeEvent<HTMLInputElement|HTMLTextAreaElement> ) => {
         if(rest.disabled) return
         rest.setValue(event.target.value)
 
@@ -45,12 +68,7 @@ export default function( { icon, placeholder = "...", type = "text", ...rest }: 
                     </div> :
                     null
                 }
-                { type == "toggle" ? 
-                    <h1>hi</h1>
-                    :
-                    <input disabled={rest.disabled} value={typeof rest.value !== "boolean" ? rest.value : rest.value.toString()} onChange={validate} type={type} placeholder={placeholder} className={styling.input}></input>
-                }
-                
+                    <InputElement { ...rest } icon={ icon } placeholder={ placeholder } type={type} validateFunc={ validate } />
             </div>
             { validationError ? <div className={styling.error_message}> <Icon type="error"></Icon> {validationError.message}</div> : null }
         </div>

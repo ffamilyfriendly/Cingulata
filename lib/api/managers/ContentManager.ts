@@ -57,6 +57,12 @@ type SourceEdit = {
     position?: number
 }
 
+type SourceCreate = {
+    parent: string,
+    path: string,
+    position?: number
+}
+
 export class Source {
     id: string
     length: number
@@ -76,7 +82,7 @@ export class Source {
     }
 
     edit(data: SourceEdit) {
-        this.manager.editSource(this.id, data)
+        return this.manager.editSource(this.id, data)
     }
 
     delete() {
@@ -116,11 +122,11 @@ export class Metadata {
     }
 
     edit(data: MetaDataEdit) {
-        this.manager.editMetadata(this.raw_parent, data)
+        return this.manager.editMetadata(this.raw_parent, data)
     }
 
     delete() {
-        this.manager.deleteMetadata(this.raw_parent)
+        return this.manager.deleteMetadata(this.raw_parent)
     }
 
     get parent(): Promise<Entity> {
@@ -182,6 +188,20 @@ export class Entity {
         return this.manager.editEntity(this.id, data)
     }
 
+    /*
+        interface rawSource {
+    id: string,
+    length: number,
+    parent: string,
+    path: string,
+    position: string
+}
+    */
+
+    createSource(data: { path: string, position?: number }) {
+        return this.manager.createSource({ parent: this.id, path: data.path, position: data.position })
+    }
+
     delete(): Promise<SuccessResponse> {
         return this.manager.deleteEntity(this.id)
     }
@@ -222,7 +242,7 @@ export default class ContentManager {
         })
     }
 
-    createSource( data: rawSource ): Promise<Entity> {
+    createSource( data: SourceCreate ): Promise<Entity> {
         return new Promise((resolve, reject) => {
             this.rest.post("/content/source", data)
                 .then(() => {
@@ -271,7 +291,7 @@ export default class ContentManager {
     }
 
     editMetadata(id: string, data: MetaDataEdit): Promise<SuccessResponse> {
-        return this.rest.patch(Routes.MetaData(id), data)
+        return this.rest.patch(Routes.EditMetaData(id), data)
     }
 
     deleteMetadata(id: string): Promise<SuccessResponse> {

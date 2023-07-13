@@ -1,0 +1,28 @@
+.mainSection {
+    width: 100%;
+    gap: 2rem;
+}
+
+.baseSection {
+    grid-area: BASE;
+}
+
+.metaSection {
+    grid-area: META;
+}
+
+.sourceSection {
+    grid-area: SOURCES;
+}
+
+@media screen and (min-width: 750px) {
+    .mainSection {
+        display: grid;
+        grid-template-areas:
+        " BASE PREVIEW "
+        " META SOURCES "
+        ;
+        width: 100%;
+        gap: 2rem;
+    }
+}
