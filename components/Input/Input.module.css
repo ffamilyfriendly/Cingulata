@@ -44,6 +44,25 @@
     width: 100%;
 }
 
+.rating {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.ratingInput {
+    border: none;
+    background-color: var(--lifted);
+    font-size: 1rem;
+    padding: 0.2rem;
+    border-radius: 0.2rem;
+    color: var(--ctx_on_bg);
+    appearance: textfield;
+    width: 3em;
+    text-align: center;
+}
+
 .icon {
     display: flex;
     justify-content: center;

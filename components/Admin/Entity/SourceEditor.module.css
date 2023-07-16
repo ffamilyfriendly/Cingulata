@@ -1,0 +1,6 @@
+.source {
+    background-color: var(--lifted);
+    width: 100%;
+    min-height: 2rem;
+    padding: 0.4rem;
+}

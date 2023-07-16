@@ -13,7 +13,7 @@ interface rawSource {
     length: number,
     parent: string,
     path: string,
-    position: string
+    position: number
 }
 
 interface rawMetadata {
@@ -63,12 +63,16 @@ type SourceCreate = {
     position?: number
 }
 
+type SourceType = "Media"|"Subtitles"
+
 export class Source {
     id: string
     length: number
     raw_parent: string
     path: string
-    position: string
+    position: number
+    displayname: string
+    type: SourceType
 
     manager: ContentManager
     constructor(data: rawSource, ContentManager: ContentManager) {
@@ -77,6 +81,10 @@ export class Source {
         this.raw_parent = data.parent
         this.path = data.path
         this.position = data.position
+
+        // These properties are not yet added to the API
+        this.displayname = "test"
+        this.type = "Media"
 
         this.manager = ContentManager
     }
@@ -153,7 +161,7 @@ export class Entity {
         this.type = EntityTypes[data.entity_type]
         this.public = !data.flag
         this.position = data.position
-        this.sources = data.sources ? data.sources.map(source => new Source(source, ContentManager)) : []
+        this.sources = data.sources ? data.sources.map(source => new Source(source, ContentManager)).sort(( a, b ) => a.position - b.position) : []
         if(data.metadata) this.metadata = new Metadata(data.metadata, ContentManager)
 
         this.next_id = data.next
@@ -182,6 +190,15 @@ export class Entity {
                 .then(rawData => resolve(Number(rawData.data)))
                 .catch(reject)
         })
+    }
+
+    get duration(): number {
+        let dur = 0
+
+        for(const src of this.sources)
+            dur += src.length
+
+        return dur
     }
 
     edit(data: { parent?: string, flag?: number, position?: number, next?: string }): Promise<SuccessResponse> {

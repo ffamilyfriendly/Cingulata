@@ -1,0 +1,25 @@
+.entity {
+    min-height: 3rem;
+    background-color: var(--surface);
+    border-radius: .35em;
+}
+
+.Audio {
+    content: "cum";
+}
+
+.starContainer {
+    display: flex;
+}
+
+.starFilled {
+    --ctx_on_bg: var(--primary);
+}
+
+.starHalfFilled {
+    --ctx_on_bg: url(#grad);
+}
+
+.starUnfilled {
+    --ctx_on_bg: var(--lifted);
+}

@@ -1,3 +1,5 @@
+import { MouseEventHandler } from "react"
+import { GenericChildrenProp } from "../generic"
 import style from "./Icon.module.css"
 
 export enum Paths {
@@ -30,11 +32,18 @@ export type IconType = keyof typeof Paths
 interface IconProps {
     type: IconType,
     color?: string,
-    className?: string
+    className?: string,
+    children?: GenericChildrenProp,
+    onHover?: MouseEventHandler<SVGSVGElement>,
+    onClick?: MouseEventHandler<SVGSVGElement>,
+    onLeave?: MouseEventHandler<SVGSVGElement>
 }
 
 export default function( props: IconProps ) {
     return (
-        <svg className={`${style.svg} ${props.className||""}`} clipRule="evenodd" fillRule="evenodd" strokeLinejoin="round" strokeMiterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d={Paths[props.type]} fillRule="nonzero"/></svg>
+        <svg onClick={props.onClick} onMouseLeave={props.onLeave} onMouseMove={props.onHover} onMouseOver={props.onHover} className={`${style.svg} ${props.className||""}`} clipRule="evenodd" fillRule="evenodd" strokeLinejoin="round" strokeMiterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            { props.children ? <defs>{props.children}</defs> : null }
+            <path d={Paths[props.type]} fillRule="nonzero"/>
+        </svg>
     )
 }
