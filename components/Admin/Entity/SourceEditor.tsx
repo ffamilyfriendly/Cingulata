@@ -24,14 +24,10 @@ export default function SourceEditor( { entity }: { entity: Entity } ) {
 
     const [ savePromise, setSavePromise ] = useState<Promise<any>|null>()
 
-    useEffect(() => {
-       entity.metadata?.edit({ rating: 3.5 })
-    })
-
     return (
         <div className="stack gap-medium">
             <div>
-                { sources.map(s => <SourceItem source={s} />) }
+                { sources.map(s => <SourceItem key={s.id} source={s} />) }
             </div>
             <Button onclick={() => {}} loadWithPromise={savePromise} disabled={!edited} style="primary" width="full">Save</Button>
         </div>

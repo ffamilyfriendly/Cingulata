@@ -2,7 +2,7 @@
 
 import Button from "@/components/Button";
 import Input from "@/components/Input";
-import { Entity } from "@/lib/api/managers/ContentManager";
+import { Entity, Metadata } from "@/lib/api/managers/ContentManager";
 import { useEffect, useRef, useState } from "react";
 
 // modified to be TS compliant
@@ -23,7 +23,7 @@ function getCountries(lang = 'en') {
     return countries
 }
 
-export default function MetaDataEditor( { entity, ...props }: { entity: Entity } ) {
+export default function MetaDataEditor( { entity, onEdit, ...props }: { entity: Entity, onEdit: ( metadata: { name: string, description: string, thumbnail: string, banner: string, language: string, age_rating: string, rating: number } ) => void } ) {
 
     const metadata = entity.metadata
     if(!metadata) return ( <p> NO METADATA </p> )
@@ -46,9 +46,10 @@ export default function MetaDataEditor( { entity, ...props }: { entity: Entity }
         if(firstRender.current) {
             firstRender.current = false
         } else {
+            onEdit({name, description, thumbnail, banner, language, age_rating: age, rating })
             setEdited(true)
         }
-    }, [ name, description, thumbnail, banner, language, age ])
+    }, [ name, description, thumbnail, banner, language, age, rating ])
 
     const saveEdited = () => {
         const promise = metadata.edit( { name, description, thumbnail, banner, language, age_rating: age, rating } )

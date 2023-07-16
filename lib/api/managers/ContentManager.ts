@@ -193,6 +193,7 @@ export class Entity {
     }
 
     get duration(): number {
+        console.log("DURATION")
         let dur = 0
 
         for(const src of this.sources)

@@ -1,4 +1,4 @@
-import { Entity as ApiEntity } from "@/lib/api/managers/ContentManager";
+import { Entity as ApiEntity, Metadata } from "@/lib/api/managers/ContentManager";
 import Entity from "@/components/entity/Entity"
 import { UserPermissions } from "@/lib/api/managers/UserManager";
 import { client } from "@/pages/_app";
@@ -23,6 +23,7 @@ export default function Home() {
 
     const [ entity, setEntity ] = useState<ApiEntity|null>()
     const [ status, setStatus ] = useState<{ title: string, message: string, icon?: IconType, style: Styles }>()
+    const [ metadata, setMetadata ] = useState<{ name: string, description: string, thumbnail: string, banner: string, language: string, age_rating: string, rating: number, duration: number }>()
 
     useEffect(() => {
         client.content.get(id, true)
@@ -35,6 +36,19 @@ export default function Home() {
 
     const setError = ( title: string, message: string ) => {
         setStatus({ title, style: "error", icon:"error", message })
+    }
+
+    const onEdit = ( e: { name: string, description: string, thumbnail: string, banner: string, language: string, age_rating: string, rating: number } ): void => {    
+        setMetadata({ ...e, duration: entity?.duration||0 })
+    }
+
+    const shallowCopy = () => {
+        const ob1 = Object.assign({}, entity)
+        if(ob1.metadata) {
+            ob1.metadata = Object.assign(ob1.metadata, metadata)
+        }
+
+        return ob1
     }
 
     if(!entity) return <p>loading</p>
@@ -54,7 +68,7 @@ export default function Home() {
 
                         <div className={ style.metaSection }>
                             <h2>Metadata</h2>
-                            <MetaDataEditor entity={ entity } />
+                            <MetaDataEditor onEdit={onEdit} entity={ entity } />
                         </div>
 
                         <div className={ style.sourceSection }>
@@ -63,7 +77,7 @@ export default function Home() {
                         </div>
 
                         <div className={ style.previewSection }>
-                            <Entity entity={entity} />
+                            <Entity entity={shallowCopy()} />
                         </div>
                     </section>
                 </div>

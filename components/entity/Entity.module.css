@@ -1,11 +1,49 @@
 .entity {
+    position: relative;
+    overflow: hidden;
     min-height: 3rem;
     background-color: var(--surface);
     border-radius: .35em;
+    padding: 0.5rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.image {
+    position: relative;
+    border-radius: .5em;
+    overflow: hidden;
+    aspect-ratio: 1/1.5;
+    object-fit: cover;
+    height: 6rem;
+}
+
+.header {
+    display: flex;
+    justify-content: space-evenly;
+    gap: 1rem;
+}
+
+.row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.col {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .Audio {
     content: "cum";
+}
+
+.pgRated {
+    outline: 2px solid gray;
+    outline-offset: 1px;
+    padding: 0.2em;
 }
 
 .starContainer {
