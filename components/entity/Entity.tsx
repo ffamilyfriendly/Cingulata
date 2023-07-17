@@ -32,8 +32,18 @@ export function Stars( { value, max = 5, ...rest }: { value: number, max?: numbe
     )
 }
 
-export default function Entity( { entity, ...props }: { entity: ApiEntity } ) {
-    console.log(entity, entity.duration)
+function formatAsTime( secs: number ): string {
+    let time = ""
+    const hrs = secs / (60*60)
+    const minutes = (secs / 60) - Math.floor(hrs) * 60
+
+    if(Math.floor(hrs) !== 0) time += `${Math.round(hrs)}h `
+    time += `${Math.round(minutes)}m`
+
+    return time
+}
+
+function GenericEntity( { entity, ...props }: { entity: ApiEntity } ) {
     return (
         <div className={ `${style.entity} ${style[EntityTypes[entity.type]]}` }>
             <div className={style.image}>
@@ -44,12 +54,24 @@ export default function Entity( { entity, ...props }: { entity: ApiEntity } ) {
                     <h4> { entity.metadata?.name } </h4>
                     <Stars className={style.stars} value={entity.metadata?.rating||0} />
                 </div>
-                <div className={style.row}>
-                    <p className={style.pgRated}>{ entity.metadata?.age_rating }</p>
+                <div className={`${style.row} ${style.metaRow}`}>
+                    { entity?.metadata?.age_rating ? <p className={style.pgRated}>{ entity.metadata?.age_rating }</p> : null}
                     <p>{entity.metadata?.year}</p>
-                    <p>{entity.duration} aids</p>
+                    <p>{formatAsTime(entity.duration||0)}</p>
                 </div>
             </div>
         </div>
     )
+}
+
+
+export default function Entity( { entity, ...props }: { entity: ApiEntity } ) {
+    switch (entity.type) {
+        case EntityTypes.Movie:
+        case EntityTypes.Audio:
+            return <GenericEntity entity={entity} {...props} />
+        break;
+        default:
+            return <p>not implemented</p>
+    }
 }

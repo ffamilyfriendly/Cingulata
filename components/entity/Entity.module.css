@@ -36,14 +36,23 @@
     gap: 0.5rem;
 }
 
+.metaRow {
+    color: lightgray;
+}
+
 .Audio {
     content: "cum";
+}
+
+.Audio > .image {
+    aspect-ratio: 1/1;
 }
 
 .pgRated {
     outline: 2px solid gray;
     outline-offset: 1px;
     padding: 0.2em;
+    border-radius: .2em;
 }
 
 .starContainer {
