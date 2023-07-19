@@ -16,6 +16,7 @@ import MetaDataEditor from "@/components/Admin/Entity/MetaDataEditor";
 
 import GenericStyles from "@/styles/common.module.css"
 import style from "./content.module.css"
+import Input from "@/components/Input";
 
 export default function Home() {
     const id = useRouter().query["id"]
@@ -77,6 +78,7 @@ export default function Home() {
                         </div>
 
                         <div className={ style.previewSection }>
+                            <Input setValue={(v) => {console.log(v)}} defaultDir="/home" multiple={true} value="" type="file" label="file" />    
                             <Entity entity={shallowCopy()} />
                         </div>
                     </section>

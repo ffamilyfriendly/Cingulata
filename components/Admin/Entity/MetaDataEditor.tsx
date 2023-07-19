@@ -61,11 +61,11 @@ export default function MetaDataEditor( { entity, onEdit, ...props }: { entity: 
 
     return (
         <div className="stack gap-medium">
-            <Input value={ name } setValue={ setName } label="Name" />
+            <Input type="text" value={ name } setValue={ setName } label="Name" />
             <Input value={ description } setValue={ setDescription } label="Description" type="textbox" />
             <Input value={ rating } setValue={ setRating } label="Rating" type="rating" />
-            <Input value={ thumbnail } setValue={ setThumbnail } label="Thumbnail" type="image" />
-            <Input value={ banner } setValue={ setBanner } label="banner" type="image" />
+            <Input value={ thumbnail } setValue={ setThumbnail } label="Thumbnail" type="text" />
+            <Input value={ banner } setValue={ setBanner } label="banner" type="text" />
             <Input value={ language } setValue={ setLanguage } label="Language" type="select" selectOptions={ getCountries() } />
             <Input value={ age } setValue={ setAge } label="Age Rating" type="select" selectOptions={[ { value: "ALL", display: "All Audiences" }, { value: "PG", display: "Parental Guidance" }, { value: "PG13", display: "Over 13" }, { value: "R", display: "Adult" } ]} />
             

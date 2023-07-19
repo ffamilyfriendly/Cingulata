@@ -92,6 +92,10 @@ export class Client {
         })
     }
 
+    getDir( dir: string ): Promise<SuccessResponse<string[]>> {
+        return this.rest.get<string[]>(Routes.GetFiles(dir))
+    }
+
     get hostConfig(): Promise<HostConfig> {
         return new Promise((resolve, reject) => {
             this.rest.get("/")

@@ -9,7 +9,7 @@ import { Styles } from "@/components/generic";
 import StatusBox from "@/components/StatusBox";
 import AuthedComponent from "@/components/AuthedComponent";
 
-export function ToggleRow( props: { label: string, toggled?: boolean, onClick: Function } ) {
+export function ToggleRow( { stateManaged = true, ...props}: { label: string, toggled?: boolean, onClick: Function, stateManaged?: boolean } ) {
 
     const [ toggled, setToggled ] = useState<Boolean>(!!props.toggled)
 
@@ -23,7 +23,7 @@ export function ToggleRow( props: { label: string, toggled?: boolean, onClick: F
             <p>{ props.label }</p>
             
             <div onClick={handleOnClick} className={style.toggleContainer}>
-                <div className={`${style.slider} ${ toggled ? style.toggled : "" }`}></div>
+                <div className={`${style.slider} ${ ( stateManaged ? toggled : props.toggled ) ? style.toggled : "" }`}></div>
             </div>
         </div>
     )

@@ -1,38 +1,3 @@
-.label {
-    color: rgba(255, 255, 255, 0.666);
-}
-
-.container {
-    --ctx_on_bg: white;
-    background-color: var(--lifted);
-    display: flex;
-    border-radius: 0.2rem;
-    padding: 0.33rem;
-    gap: 0.5rem;
-    position: relative;
-}
-
-.container.error {
-    outline: 2px solid var(--error);
-}
-
-.input {
-    border: none;
-    background-color: transparent;
-    font-size: 1rem;
-    padding: 0.2rem;
-    color: var(--ctx_on_bg);
-}
-
-.textarea {
-    border: none;
-    resize: none;
-    width: 100%;
-    background-color: transparent;
-    color: var(--ctx_on_bg);
-    padding: 0.2rem;
-}
-
 .select {
     background-color: transparent;
     color: var(--on-background);
@@ -109,42 +74,10 @@
     color: gray;
 }
 
-.rating {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-}
-
-.ratingInput {
-    border: none;
+.fileCannotSelect {
+    color: gray;
     background-color: var(--lifted);
+    padding: 0.33em;
+    border-radius: .2rem;
     font-size: 1rem;
-    padding: 0.2rem;
-    border-radius: 0.2rem;
-    color: var(--ctx_on_bg);
-    appearance: textfield;
-    width: 3em;
-    text-align: center;
-}
-
-.icon {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0.1rem;
-}
-
-.error_message {
-    padding: 0.5rem 0.5rem 0 0rem;
-    font-size: 0.8rem;
-    display: flex;
-    --ctx_on_bg: var(--error);
-    color: var(--error);
-    gap: 0.2rem;
-}
-
-.disabled {
-    cursor: not-allowed;
-    --ctx_on_bg: gray;
 }

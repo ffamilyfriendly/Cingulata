@@ -1,27 +1,43 @@
-import React, { ChangeEvent, Dispatch, SetStateAction, useRef, useState } from "react"
+import React, { ChangeEvent, Dispatch, SetStateAction, useEffect, useRef, useState } from "react"
 import { Stars } from "../entity/Entity"
 import { Result } from "../generic"
 import Icon, { IconType } from "../Icon"
+import FileInput, { FileInput as IFileInput } from "./FileInput"
 import styling from "./Input.module.css"
 
-type InputTypes = "color" | "date" | "email" | "file" | "checkbox" | "number" | "password" | "search" | "text" | "textbox" | "select" | "image" | "rating"
+type DefaultInputType = "color" | "date" | "email" | "checkbox" | "number" | "password" | "search" | "text" | "textbox" | "rating"
+type CustomInputImplementation =  "select" | "image" | "file"
+type InputTypes = DefaultInputType | CustomInputImplementation
 
 
 
-interface InputProps {
+export interface InputProps {
     label?: string,
     icon?: IconType,
     placeholder?: string,
     type?: InputTypes,
     validate?: ( value: string ) => Result,
     setValue: Dispatch<SetStateAction<any | undefined>>,
-    value: string|number|boolean,
-    disabled?: boolean,
+    value: string|string[]|number|boolean,
+    disabled?: boolean
+}
+
+interface SelectInput extends InputProps {
+    type: "select"
     selectOptions?: { value: string, display: string }[]
 }
 
-interface InputElementProps extends InputProps {
-    validateFunc( event: ChangeEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>|number ): void
+interface GenericInput extends InputProps {
+    type: DefaultInputType
+}
+
+type JoinedInputProps = 
+    | SelectInput
+    | GenericInput
+    | IFileInput
+
+export type InputElementProps = JoinedInputProps & {
+    validateFunc( event: ChangeEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>|number|string[] ): void
 }
 
 
@@ -66,6 +82,9 @@ function InputElement( props: InputElementProps ) {
                 </select>
             )
         break;
+        case "file":
+            return <FileInput { ...props } />
+        break;
         case "rating":
             return <RatingsElement props={props} />
         break;
@@ -75,13 +94,13 @@ function InputElement( props: InputElementProps ) {
     }
 }
 
-export default function( { icon, placeholder = "...", type = "text", ...rest }: InputProps ) {
+export default function( { icon, placeholder = "...", type = "text", ...rest }: JoinedInputProps ) {
 
     const [ validationError, setValidationError ] = useState<Result|null>()
 
     const validate = ( event: ChangeEvent<HTMLInputElement|HTMLTextAreaElement>|number ) => {
         if(rest.disabled) return
-        if(typeof event === "number") {
+        if(typeof event === "number" || event instanceof Array) {
             return rest.setValue(event)
         }
         rest.setValue(event.target.value)

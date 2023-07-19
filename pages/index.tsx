@@ -1,9 +1,6 @@
 import Head from 'next/head'
-import Button from '@/components/Button/'
-import { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import Modal from '@/components/Modal'
+import { useEffect, useState } from 'react'
 import { client } from './_app'
-import { EntityTypes } from '@/lib/api/managers/ContentManager'
 import Styling from "@/styles/pages/index.module.css"
 import Icon, { IconType } from '@/components/Icon'
 import Link from 'next/link'
