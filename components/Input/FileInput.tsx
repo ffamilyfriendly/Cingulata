@@ -76,10 +76,16 @@ export default function( props: FileInput & InputElementProps ) {
                 handleClick(file, false)
         }
 
+        const verifyFileEnd = ( f: string ) => {
+            const fileEndingArr = f.split(".")
+            return /^[^=.].+/gm.test(f) && ( fileEndingArr.length > 1 ? /^(x\d+)$/gm.test(fileEndingArr.pop()||"") : true)
+        }
+
         const getDirFromPath = ( p: string ) => p.split("/").slice(0, -1).join("/")
-        const getOnlyFiles = ( files: string[] ) => files.filter(f => /.*\/[^=.]+\w+\.\w+$/gm.test(f) && (props.fileTypes ? props.fileTypes.includes(f.split(".").pop()||"") : true))
+        const getOnlyFiles = ( files: string[] ) => files.filter(f => !verifyFileEnd(f.split("/").pop()||"") && (props.fileTypes ? props.fileTypes.includes(f.split(".").pop()||"") : true))
 
         const fileItems = getOnlyFiles(dirFiles||[]).map(f => <FileEntry handleClick={handleClick} filename={f} selectedFiles={selectedFiles} multiple={props.multiple} />)
+
         return (
             <Modal title="Select Files" onclose={() => { setModal(false) }}>
 
@@ -89,7 +95,7 @@ export default function( props: FileInput & InputElementProps ) {
                     <b>subdirs</b>
                     <select value={dir} onChange={(ev) => { setDir(ev.target.value) }} className={ styling.select }>
                         { <option value={dir}>(current) { dir }</option> }
-                        { dirFiles?.filter(f => f.split("/").pop()?.split(".").length === 1).map(f => <option value={f}>/{prettifyFilePath(f)}</option>) }
+                        { dirFiles?.filter(f => verifyFileEnd(f.split("/").pop()||"")).map(f => <option value={f}>/{prettifyFilePath(f)}</option>) }
                     </select>
                 </div>
 
@@ -111,7 +117,7 @@ export default function( props: FileInput & InputElementProps ) {
     return (
         <div className={ styling.file }>
             { modal ? <FileSelectModal /> : null }
-            <p className={`${ styling.fileNames } ${ val.join(",") ? "" : styling.fileNamesEmpty}`}>{ val.join(", ") || "empty" }</p>
+            <p className={`${ styling.fileNames } ${ val.join(",") ? "" : styling.fileNamesEmpty}`}>{ val.map(f => prettifyFilePath(f)).join(", ") || "empty" }</p>
             <Button onclick={() => { setModal(true) }} disabled={ props.disabled } style="primary">Select</Button>
         </div>
     )

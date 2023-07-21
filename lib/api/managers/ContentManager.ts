@@ -13,7 +13,9 @@ interface rawSource {
     length: number,
     parent: string,
     path: string,
-    position: number
+    position: number,
+    name: string,
+    source_type: "Video"|"Audio"|"Subtitle"
 }
 
 interface rawMetadata {
@@ -54,16 +56,23 @@ type MetaDataEdit = {
 type SourceEdit = {
     parent?: string,
     path?: string,
-    position?: number
+    position?: number,
+    name?: string
 }
 
 type SourceCreate = {
     parent: string,
     path: string,
-    position?: number
+    position?: number,
+    name?: string,
+    source_type: SourceType
 }
 
-type SourceType = "Media"|"Subtitles"
+export enum SourceType {
+    Video,
+    Audio,
+    Subtitle,
+}
 
 export class Source {
     id: string
@@ -83,8 +92,8 @@ export class Source {
         this.position = data.position
 
         // These properties are not yet added to the API
-        this.displayname = "test"
-        this.type = "Media"
+        this.displayname = data.name
+        this.type = SourceType[data.source_type]
 
         this.manager = ContentManager
     }
@@ -215,8 +224,8 @@ export class Entity {
 }
     */
 
-    createSource(data: { path: string, position?: number }) {
-        return this.manager.createSource({ parent: this.id, path: data.path, position: data.position })
+    createSource(data: { path: string, name?: string, type: SourceType, position?: number }) {
+        return this.manager.createSource({ parent: this.id, path: data.path, name: data.name, source_type: data.type, position: data.position })
     }
 
     delete(): Promise<SuccessResponse> {
@@ -261,7 +270,7 @@ export default class ContentManager {
 
     createSource( data: SourceCreate ): Promise<Entity> {
         return new Promise((resolve, reject) => {
-            this.rest.post("/content/source", data)
+            this.rest.post("/content/source", { ...data, source_type: SourceType[data.source_type] })
                 .then(() => {
                     this.cache.delete(data.parent)
                     resolve(this.get(data.parent))

@@ -78,7 +78,6 @@ export default function Home() {
                         </div>
 
                         <div className={ style.previewSection }>
-                            <Input setValue={(v) => {console.log(v)}} defaultDir="/home" multiple={true} value="" type="file" label="file" />    
                             <Entity entity={shallowCopy()} />
                         </div>
                     </section>
