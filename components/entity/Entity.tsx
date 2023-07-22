@@ -32,7 +32,7 @@ export function Stars( { value, max = 5, ...rest }: { value: number, max?: numbe
     )
 }
 
-function formatAsTime( secs: number ): string {
+export function formatAsTime( secs: number ): string {
     let time = ""
     const hrs = secs / (60*60)
     const minutes = (secs / 60) - Math.floor(hrs) * 60

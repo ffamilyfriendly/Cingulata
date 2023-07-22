@@ -3,4 +3,36 @@
     width: 100%;
     min-height: 2rem;
     padding: 0.4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    --ctx_on_bg: white;
+    border-radius: 0.2em;
+    gap: 0.5em;
+}
+
+.sourceLists {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+}
+
+.meta {
+    flex-grow: 1;
+}
+
+.sourceSection {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3em;
+}
+
+.pillRow {
+    display: flex;
+}
+
+.pill {
+    background-color: var(--lifted);
+    padding: 0.2em;
+    border-radius: .4em;
 }

@@ -1,0 +1,28 @@
+.sortable {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    user-select: none;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.item > svg {
+    --ctx_on_bg: white;
+}
+
+.dragged > * {
+    opacity: 0.3;
+}
+
+.over {
+    background-color: green;
+}
+
+.target > :not(svg) {
+    outline: 2px solid var(--primary);
+}

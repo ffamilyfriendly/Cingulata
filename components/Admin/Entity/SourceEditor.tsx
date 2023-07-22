@@ -1,21 +1,95 @@
 import Button from "@/components/Button"
+import { formatAsTime } from "@/components/entity/Entity"
 import Icon, { IconType } from "@/components/Icon"
 import Input from "@/components/Input"
 import Modal from "@/components/Modal"
 import { Entity, Source, SourceType } from "@/lib/api/managers/ContentManager"
 import { client } from "@/pages/_app"
 import { Dispatch, useEffect, useRef, useState } from "react"
+import Sortable from "../Sortable/Sortable"
 
 import entStyle from "./NewEntity.module.css"
 import style from "./SourceEditor.module.css"
 
+const fileTypes: { [ key in SourceType ]: string[] } = {
+    [ SourceType.Audio ]: [ "mp3" ],
+    [ SourceType.Video ]: [ "mp4" ],
+    [ SourceType.Subtitle ]: [ "vtt" ]
+} 
 
+function SourceEditModal( { source, setModal }: { source: Source, setModal: Function } ) {
+
+    const [ name, setName ] = useState(source.displayname)
+    const [ path, setPath ] = useState(source.path)
+    const [ position, setPosition ] = useState(source.position)
+
+    const firstRender = useRef(true)
+    const [ edited, setEdited ] = useState(false)
+
+    const [ promise, setPromise ] = useState<Promise<any>|null>()
+
+    useEffect(() => {
+        if(firstRender.current) {
+            firstRender.current = false
+        } else {
+            setEdited(true)
+        }
+    }, [ name, path, position ])
+
+    const saveEdit = () => {
+        const sourceEdit = source.edit( { name, path, position } )
+            .then(() => {
+
+                // this is bad as this no longer is a pure function
+                // we should ideally not alter the source itself... 
+                // but: if it works it works. 
+                source.displayname = name
+                source.position = position
+                source.path = path
+
+                setEdited(false)
+            })
+
+        setPromise(sourceEdit)
+    }
+
+    return (
+        <Modal title={`editing ${source.displayname}`} onclose={() => { setModal(false) }} >
+            <section className="stack gap-medium">
+                <Input label="Name" type="text" value={name} setValue={setName} />
+                <Input label="Path" type="file" value={[ path ]} fileTypes={fileTypes[source.type]} setValue={(s) => { setPath(s[0]) }} />
+                <Input label="Position" type="number" value={position} setValue={(v) => setPosition(Number(v))} />
+                <Button loadWithPromise={promise} disabled={ !edited } onclick={saveEdit} style="primary" width="full">Save</Button>
+            </section>
+        </Modal>
+    )
+}
 
 function SourceItem( { source }: { source: Source } ) {
+
+    const [ modal, setModal ] = useState(false)
+
+    const sourceIcons: { [ key in SourceType ]: IconType } = {
+        [ SourceType.Audio ]: "audio",
+        [ SourceType.Video ]: "movie",
+        [ SourceType.Subtitle ]: "subtitle"
+    } 
+
     return (
         <div className={style.source}>
-            <h4>{ source.displayname }</h4>
-            { source.length }
+            { modal ? <SourceEditModal source={source} setModal={setModal} /> : null }
+            <Icon type={ sourceIcons[source.type] } />
+            <div className={`stack gap-small ${style.meta}`}>
+                <h4>{ source.displayname }</h4>
+                <div className={ style.pillRow }>
+                { source.type != SourceType.Subtitle ? <div className={ style.pill }>
+                         <span> {formatAsTime(source.length)} </span>  
+                    </div> : null } 
+                </div>
+            </div>
+            <div>
+                <Button onclick={() => { setModal(true) }} style="tertiary">edit</Button>
+            </div>
         </div>
     )
 }
@@ -47,12 +121,6 @@ function NewSource( { setModal, entity, ...props }: { setModal: Dispatch<boolean
 
     const [ promise, setPromise ] = useState<Promise<any>|null>()
 
-    const fileTypes: { [ key in SourceType ]: string[] } = {
-        [ SourceType.Audio ]: [ "mp3" ],
-        [ SourceType.Video ]: [ "mp4" ],
-        [ SourceType.Subtitle ]: [ "vtt" ]
-    } 
-
     useEffect(() => {
         // When type switches we want to clear any path associated with that type
         setPath([])
@@ -61,7 +129,7 @@ function NewSource( { setModal, entity, ...props }: { setModal: Dispatch<boolean
     const createSource = () => {
         const creationPromise = entity.createSource({ path: path[0], type })
             .then((d) => {
-                props.onNew(d.sources.find( p => p.path === path[0] ))
+                props.onNew(d.sources[type].find( p => p.path === path[0] ))
                 setModal(false)
             })
         setPromise(creationPromise)
@@ -92,17 +160,56 @@ export default function SourceEditor( { entity }: { entity: Entity } ) {
     const onNew = ( src: Source|undefined ) => {
         if(src) {
             setSources(s => {
-                s.push(src)
+                s[src.type].push(src)
                 return s
             })
         }
     }
 
+    const handleSortChange = ( t: SourceType, currIdx: number, newIdx: number ) => {
+
+        /*
+            NOTE TO POST-VACATION JOHN:
+            This here function is called whenever a source has been dropped to its new desired position
+            what we want to do is save the new order for the sources both locally in the client and on the backend,
+            we also want to update the state to reflect the position of the source in the source list
+        */
+
+        /*setSources( srcArr => {
+            let l = new List(...srcArr.filter(s => s.type === t))
+            console.log(l)
+            l.move(currIdx, newIdx, "swap")
+            console.log(l)
+            return srcArr.move(currIdx, newIdx)
+        } ) */
+    }
+
     return (
         <div className="stack gap-medium">
             { modal ? <NewSource onNew={onNew} entity={entity} setModal={setModal} /> : null }
-            <div>
-                { sources.map(s => <SourceItem key={s.id} source={s} />) }
+            <div className={ style.sourceLists }>
+                <section>
+                    <h3>Video</h3>
+                    <div className={ style.sourceSection }>
+                        { entity.sources[SourceType.Video].map(s => <SourceItem key={s.id} source={s} />) }
+                    </div>
+                </section>
+
+                <section>
+                    <h3>Subtitles</h3>
+                    <div className={ style.sourceSection }>
+                        <Sortable onChange={( item, newPos ) => { handleSortChange(SourceType.Subtitle, item, newPos) }}>
+                            { entity.sources[SourceType.Subtitle].map(s => <SourceItem key={s.id} source={s} />) }
+                        </Sortable>
+                    </div>
+                </section>
+
+                <section>
+                    <h3>Audio</h3>
+                    <div className={ style.sourceSection }>
+                        { entity.sources[SourceType.Audio].map(s => <SourceItem key={s.id} source={s} />) }
+                    </div>
+                </section>
             </div>
             <Button onclick={() => { setModal(true) }} loadWithPromise={savePromise} style="primary" width="full">New</Button>
         </div>

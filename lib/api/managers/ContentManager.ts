@@ -1,5 +1,6 @@
+import { isReturnStatement } from "typescript";
 import { Client } from "../client";
-import { FailResponse, Rest, Routes, SuccessResponse } from "../rest";
+import { Rest, Routes, SuccessResponse } from "../rest";
 
 export enum EntityTypes {
     Audio,
@@ -151,13 +152,21 @@ export class Metadata {
     }
 }
 
+export function SortBySourceType( t: SourceType, arr: Source[] ) {
+    return arr.filter( i => i.type === t ).sort(( a, b ) => a.position - b.position)
+}
+
 export class Entity {
     creator_id: number
     id: string
     type: EntityTypes
     public: boolean
     position: number
-    sources: Source[]
+
+    sources: { 
+        [ key in SourceType ]: Source[]
+     }
+
     metadata?: Metadata
     next_id?: string
     parent_id: string
@@ -170,7 +179,20 @@ export class Entity {
         this.type = EntityTypes[data.entity_type]
         this.public = !data.flag
         this.position = data.position
-        this.sources = data.sources ? data.sources.map(source => new Source(source, ContentManager)).sort(( a, b ) => a.position - b.position) : []
+
+        /*
+            NOTE FOR POST VACATION JOHN:
+            I want to init this in a way that is not hard-coded. I could not figure out how to do this but its possible.
+            fix this, please. You oath
+        */
+        this.sources = { [SourceType.Audio]: [], [SourceType.Video]: [], [SourceType.Subtitle]: [] }
+
+        const tmpArr = data.sources.map(source => new Source(source, ContentManager))
+        for(const src of tmpArr) {
+            if(!this.sources[src.type]) this.sources[src.type] = []
+            this.sources[src.type]?.push(src)
+        }
+
         if(data.metadata) this.metadata = new Metadata(data.metadata, ContentManager)
 
         this.next_id = data.next
@@ -204,7 +226,7 @@ export class Entity {
     get duration(): number {
         let dur = 0
 
-        for(const src of this.sources)
+        for(const src of (this.type === (EntityTypes.Movie|EntityTypes.Series) ? this.sources[SourceType.Video] : this.sources[SourceType.Audio]))
             dur += src.length
 
         return dur

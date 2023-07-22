@@ -1,9 +1,9 @@
-import { Entity as ApiEntity, Metadata } from "@/lib/api/managers/ContentManager";
+import { Entity as ApiEntity, EntityTypes, Metadata } from "@/lib/api/managers/ContentManager";
 import Entity from "@/components/entity/Entity"
 import { UserPermissions } from "@/lib/api/managers/UserManager";
 import { client } from "@/pages/_app";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { IconType } from "@/components/Icon";
 import { Styles } from "@/components/generic";
 
@@ -16,7 +16,6 @@ import MetaDataEditor from "@/components/Admin/Entity/MetaDataEditor";
 
 import GenericStyles from "@/styles/common.module.css"
 import style from "./content.module.css"
-import Input from "@/components/Input";
 
 export default function Home() {
     const id = useRouter().query["id"]
@@ -72,10 +71,10 @@ export default function Home() {
                             <MetaDataEditor onEdit={onEdit} entity={ entity } />
                         </div>
 
-                        <div className={ style.sourceSection }>
+                        { entity.type !== EntityTypes.Category ? <div className={ style.sourceSection }>
                             <h2>Sources</h2>
                             <SourceEditor entity={ entity } />
-                        </div>
+                        </div> : null }
 
                         <div className={ style.previewSection }>
                             <Entity entity={shallowCopy()} />
