@@ -36,9 +36,9 @@ export default function BaseEntityEditor( { entity }: { entity: Entity } ) {
 
     return (
         <div className="stack gap-medium">
-            <Input label="Parent" setValue={setParent} value={parent} />
-            <Input label="Next" setValue={setNext} value={next||""} />
-            <Input label="Position" setValue={setPosition} value={position} />
+            <Input label="Parent" type="text" setValue={setParent} value={parent} />
+            <Input label="Next" type="text" setValue={setNext} value={next||""} />
+            <Input label="Position" type="number" setValue={setPosition} value={position} />
             <ToggleRow toggled={ entPublic } label="Public" onClick={(_e: any, value: boolean) => { setPublic(value) }} />
             <Button onclick={saveEdited} loadWithPromise={savePromise} disabled={!edited} style="primary" width="full">Save</Button>
         </div>

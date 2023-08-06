@@ -51,6 +51,15 @@ export default function Home() {
         return ob1
     }
 
+    const refetchEntity = () => {
+        client.content.get(id, true)
+            .then(setEntity)
+            .catch(e => {
+                setError(`${e.type} error`, e.message)
+                console.error(e)
+            })
+    }
+
     if(!entity) return <p>loading</p>
 
     return (
@@ -73,7 +82,7 @@ export default function Home() {
 
                         { entity.type !== EntityTypes.Category ? <div className={ style.sourceSection }>
                             <h2>Sources</h2>
-                            <SourceEditor entity={ entity } />
+                            <SourceEditor refetchEntity={refetchEntity} entity={ entity } />
                         </div> : null }
 
                         <div className={ style.previewSection }>

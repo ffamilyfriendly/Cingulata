@@ -3,7 +3,7 @@ import { formatAsTime } from "@/components/entity/Entity"
 import Icon, { IconType } from "@/components/Icon"
 import Input from "@/components/Input"
 import Modal from "@/components/Modal"
-import { Entity, Source, SourceType } from "@/lib/api/managers/ContentManager"
+import { Entity, EntityTypes, Source, SourceType } from "@/lib/api/managers/ContentManager"
 import { client } from "@/pages/_app"
 import { Dispatch, useEffect, useRef, useState } from "react"
 import Sortable from "../Sortable/Sortable"
@@ -145,7 +145,7 @@ function NewSource( { setModal, entity, ...props }: { setModal: Dispatch<boolean
     </Modal>
 }
 
-export default function SourceEditor( { entity }: { entity: Entity } ) {
+export default function SourceEditor( { entity, refetchEntity }: { entity: Entity, refetchEntity: () => void } ) {
 
     const [sources, setSources] = useState(entity.sources)
 
@@ -174,14 +174,29 @@ export default function SourceEditor( { entity }: { entity: Entity } ) {
             what we want to do is save the new order for the sources both locally in the client and on the backend,
             we also want to update the state to reflect the position of the source in the source list
         */
+        function arraymove(arr: Source[], fromIndex: number, toIndex: number) {
+            const arrCopy = arr.slice(0)
+            var element = arrCopy[fromIndex];
+            arrCopy.splice(fromIndex, 1);
+            arrCopy.splice(toIndex, 0, element);
 
-        /*setSources( srcArr => {
-            let l = new List(...srcArr.filter(s => s.type === t))
-            console.log(l)
-            l.move(currIdx, newIdx, "swap")
-            console.log(l)
-            return srcArr.move(currIdx, newIdx)
-        } ) */
+            return arrCopy
+        }
+
+        const newArr = arraymove(entity.sources[t], currIdx, newIdx)
+        const promises: Promise<any>[] = []
+
+        for(let i = 0; i < newArr.length; i++) {
+            const src = newArr[i]
+
+            if(i !== src.position)
+                promises.push(src.edit({ position: i }))
+        }
+
+        Promise.all(promises)
+            .then(() => {
+                refetchEntity()
+            })
     }
 
     return (
@@ -204,12 +219,17 @@ export default function SourceEditor( { entity }: { entity: Entity } ) {
                     </div>
                 </section>
 
-                <section>
-                    <h3>Audio</h3>
-                    <div className={ style.sourceSection }>
-                        { entity.sources[SourceType.Audio].map(s => <SourceItem key={s.id} source={s} />) }
-                    </div>
-                </section>
+                { entity.type === EntityTypes.Audio ?
+                    <section>
+                        <h3>Audio</h3>
+                        <div className={ style.sourceSection }>
+                            <Sortable onChange={( item, newPos ) => { handleSortChange(SourceType.Audio, item, newPos) }}>
+                                { entity.sources[SourceType.Audio].map(s => <SourceItem key={s.id} source={s} />) }
+                            </Sortable>
+                        </div>
+                    </section> : null
+            }
+
             </div>
             <Button onclick={() => { setModal(true) }} loadWithPromise={savePromise} style="primary" width="full">New</Button>
         </div>

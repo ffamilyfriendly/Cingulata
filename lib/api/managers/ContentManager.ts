@@ -92,7 +92,6 @@ export class Source {
         this.path = data.path
         this.position = data.position
 
-        // These properties are not yet added to the API
         this.displayname = data.name
         this.type = SourceType[data.source_type]
 
@@ -100,6 +99,12 @@ export class Source {
     }
 
     edit(data: SourceEdit) {
+
+        // this is garbage
+        this.displayname = data.name ?? this.displayname
+        this.path = data.path ?? this.path
+        this.position = data.position ?? this.position
+
         return this.manager.editSource(this.id, data)
     }
 
@@ -184,10 +189,13 @@ export class Entity {
             NOTE FOR POST VACATION JOHN:
             I want to init this in a way that is not hard-coded. I could not figure out how to do this but its possible.
             fix this, please. You oath
+
+            NOTE FOR PRE VACATION JOHN:
+            lol nah it works also btw you are allergic to the sun or smth so dont go enjoying the sun
         */
         this.sources = { [SourceType.Audio]: [], [SourceType.Video]: [], [SourceType.Subtitle]: [] }
 
-        const tmpArr = data.sources.map(source => new Source(source, ContentManager))
+        const tmpArr = data.sources.sort((a, b) => a.position - b.position).map(source => new Source(source, ContentManager))
         for(const src of tmpArr) {
             if(!this.sources[src.type]) this.sources[src.type] = []
             this.sources[src.type]?.push(src)
@@ -235,16 +243,6 @@ export class Entity {
     edit(data: { parent?: string, flag?: number, position?: number, next?: string }): Promise<SuccessResponse> {
         return this.manager.editEntity(this.id, data)
     }
-
-    /*
-        interface rawSource {
-    id: string,
-    length: number,
-    parent: string,
-    path: string,
-    position: string
-}
-    */
 
     createSource(data: { path: string, name?: string, type: SourceType, position?: number }) {
         return this.manager.createSource({ parent: this.id, path: data.path, name: data.name, source_type: data.type, position: data.position })

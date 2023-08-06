@@ -3,12 +3,18 @@
     flex-direction: column;
     gap: 0.5em;
     user-select: none;
+    position: relative;
 }
 
 .item {
     display: flex;
     align-items: center;
     gap: 0.5em;
+    position: relative;
+}
+
+.item > div {
+    width: 100%;
 }
 
 .item > svg {
@@ -19,10 +25,47 @@
     opacity: 0.3;
 }
 
-.over {
-    background-color: green;
-}
-
 .target > :not(svg) {
     outline: 2px solid var(--primary);
+}
+
+.dropZone {
+    height: 0;
+    width: 100%;
+    transition: .5s;
+    position: relative;
+}
+
+.dropZone > .item {
+    opacity: 0.5;
+}
+
+.dropZone > .item > :not(svg) {
+    outline: 2px solid var(--primary);
+}
+
+.dropZone.top {
+    top: -25%;
+}
+
+.dropZone.bottom {
+    bottom: -25%;
+}
+
+.dropZone.targeted {
+    height: auto;
+    opacity: 1;
+    position: relative;
+}
+
+.dropZone.show {
+    background-color: red;
+}
+
+.dropZoneTarget {
+    opacity: 0;
+    height: 2rem;
+    width: 100%;
+    position: absolute;
+    z-index: 500;
 }

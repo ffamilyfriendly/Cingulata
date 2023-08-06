@@ -19,11 +19,51 @@ export default function( { ...props }: SortableProps ) {
 
     const [ drag, setDrag ] = useState<number|null>()
 
-    function SortableItem( { position, ...props }: SortableItemProps ) {
-
-        const [ mouseOver, setMouseOver ] = useState(false)
-        const [ dragged, setDragged ] = useState(false)
+    function DropZone( { position }: { position: number } ) {
         const [ targeted, setTargeted ] = useState(false)
+
+        const handleMouseOver = () => {
+            if(typeof drag == "number" && drag !== position && drag !== position - 1) setTargeted(true)
+        }
+
+        const handleMouseUp = () => {
+            if(typeof drag !== "number") return
+            let pos = position
+            if(position > drag) pos -= 1
+
+            props.onChange(drag, pos)
+            setTargeted(false)
+            setDrag(null)
+        }
+
+        const handleLeave = () => {
+            setTargeted(false)
+        }
+
+        const classList = [ style.dropZone ]
+
+        if(targeted) classList.push( style.targeted )
+
+        return (
+            <div className={ classList.join(" ") }>
+                <div
+                    onMouseOver={handleMouseOver}
+                    onPointerLeave={handleLeave}
+                    onMouseUp={handleMouseUp}
+
+                    className={ style.dropZoneTarget }
+                > </div>
+                { targeted && typeof drag == "number" ?
+                    <div className={ style.item }>
+                        <Icon type="arrowRight" />
+                        { props.children[drag] }
+                    </div> : null
+                }
+            </div>
+        )
+    }
+
+    function SortableItem( { position, ...props }: SortableItemProps ) {
 
         const handleDown = (e: EventType) => {
             const target = e.target as HTMLElement
@@ -32,23 +72,11 @@ export default function( { ...props }: SortableProps ) {
         }
 
         const handleUp = () => {
-            if(targeted && typeof drag === "number") {
-                props.onPosChange(drag, position)
-            }
             setDrag(null)
-        }
-
-        const handleOver = () => {
-            if( typeof drag === "number" && drag !== position ) setTargeted(true)
-        }
-
-        const handleLeave = () => {
-            if(targeted) setTargeted(false)
         }
 
         let className = [ style.item ]
         if(drag === position) className.push( style.dragged )
-        if( targeted ) className.push( style.target )
 
         return (
             <div
@@ -57,9 +85,6 @@ export default function( { ...props }: SortableProps ) {
 
                 onMouseUp={handleUp}
                 onTouchEnd={handleUp}
-
-                onMouseOver={handleOver}
-                onPointerLeave={handleLeave}
 
                 onMouseEnter={ () => {  } }
                 onMouseLeave={ () => {  } }
@@ -71,9 +96,17 @@ export default function( { ...props }: SortableProps ) {
         )
     }
 
+    let elements: JSX.Element[] = [ <DropZone position={0} /> ]
+    
+    for(let i = 0; i < props.children.length; i++) {
+        const child = props.children[i]
+        elements.push(<SortableItem onPosChange={props.onChange} position={i}>{child}</SortableItem>)
+        elements.push( <DropZone position={i+1} /> )
+    }
+
     return (
         <div onTouchCancel={() => { alert("hi") }} onMouseLeave={ () => { setDrag(null) } } className={ style.sortable }>
-            { props.children.map((c, idx) => <SortableItem onPosChange={props.onChange} position={idx}>{c}</SortableItem>) }
+            { elements }
         </div>
     )
 }
