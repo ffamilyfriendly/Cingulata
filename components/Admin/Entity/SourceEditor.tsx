@@ -167,33 +167,7 @@ export default function SourceEditor( { entity, refetchEntity }: { entity: Entit
     }
 
     const handleSortChange = ( t: SourceType, currIdx: number, newIdx: number ) => {
-
-        /*
-            NOTE TO POST-VACATION JOHN:
-            This here function is called whenever a source has been dropped to its new desired position
-            what we want to do is save the new order for the sources both locally in the client and on the backend,
-            we also want to update the state to reflect the position of the source in the source list
-        */
-        function arraymove(arr: Source[], fromIndex: number, toIndex: number) {
-            const arrCopy = arr.slice(0)
-            var element = arrCopy[fromIndex];
-            arrCopy.splice(fromIndex, 1);
-            arrCopy.splice(toIndex, 0, element);
-
-            return arrCopy
-        }
-
-        const newArr = arraymove(entity.sources[t], currIdx, newIdx)
-        const promises: Promise<any>[] = []
-
-        for(let i = 0; i < newArr.length; i++) {
-            const src = newArr[i]
-
-            if(i !== src.position)
-                promises.push(src.edit({ position: i }))
-        }
-
-        Promise.all(promises)
+        entity.sources[t][currIdx].edit({ position: newIdx })
             .then(() => {
                 refetchEntity()
             })
